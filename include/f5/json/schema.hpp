@@ -18,6 +18,7 @@ namespace f5 {
 
 
         using json = fostlib::json;
+        using jpointer = fostlib::jcursor;
 
 
         namespace json_schema {

@@ -43,7 +43,17 @@ FSL_MAIN(
             std::cout << "Loading and validating " << arg << std::endl;
         }
         const auto j = load_json(arg);
-        if ( not s.validate(j) ) return 1;
+        if ( c_check_invalid.value() ) {
+            if ( s.validate(j) ) {
+                std::cout << arg << " validated when it should not have" << std::endl;
+                return 2;
+            }
+        } else {
+            if ( not s.validate(j) ) {
+                std::cout << arg << " did not validate" << std::endl;
+                return 1;
+            }
+        }
     }
 
     return 0;
