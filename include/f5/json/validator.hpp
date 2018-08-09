@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include <fost/json>
+
 
 namespace f5 {
 
@@ -15,7 +17,28 @@ namespace f5 {
     inline namespace js {
 
 
+        using json = fostlib::json;
+
+
         namespace json_schema {
+
+
+            /**
+                ## JSON Schema
+
+                Stores a JSON schema and allows it to be used to validate other JSON
+                instances.
+             */
+            class schema {
+                json validation;
+
+            public:
+                schema(json v)
+                : validation(std::move(v)) {
+                }
+
+                bool validate(json) const;
+            };
 
 
         }
