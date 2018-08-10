@@ -18,14 +18,26 @@ namespace {
         bool operator () (std::monostate) {
             return type == "null";
         }
+        bool operator () (bool) {
+            return type == "boolean";
+        }
+        bool operator () (double) {
+            return type == "number";
+        }
+        bool operator () (int64_t) {
+            return type == "integer" || type == "number";
+        }
+        bool operator () (fostlib::json::string_p) {
+            return type == "string";
+        }
+        bool operator () (f5::lstring) {
+            return type == "string";
+        }
+        bool operator () (fostlib::json::array_p) {
+            return type == "array";
+        }
         bool operator () (fostlib::json::object_p) {
             return type == "object";
-        }
-
-        template<typename T>
-        bool operator () (const T &) {
-            throw fostlib::exceptions::not_implemented(
-                __func__, "Type check", typeid(T).name());
         }
     };
 

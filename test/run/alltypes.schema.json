@@ -3,6 +3,27 @@
     "properties": {
         "null-type": {
             "type" : "null"
+        },
+        "boolean-type": {
+            "type": "boolean"
+        },
+        "object-type": {
+            "type": "object"
+        },
+        "array-type": {
+            "type": "array"
+        },
+        "string-type": {
+            "type": "string"
+        },
+        "integer-type": {
+            "type": "integer"
+        },
+        "double-type": {
+            "type": "number"
+        },
+        "number-int-type": {
+            "type": "number"
         }
     }
 }
