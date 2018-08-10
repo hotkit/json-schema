@@ -11,6 +11,23 @@
 namespace {
 
 
+    struct typecheck {
+        f5::u8view type;
+
+        bool operator () (std::monostate) {
+            return type == "null";
+        }
+        bool operator () (fostlib::json::object_p) {
+            return type == "object";
+        }
+
+        template<typename T>
+        bool operator () (const T &) {
+            return false;
+        }
+    };
+
+
     bool validate(
         f5::json schema, f5::jpointer spos, f5::json data, f5::jpointer dpos
     ) {
@@ -21,11 +38,11 @@ namespace {
             } else if ( rule.key() == "type" ) {
                 const auto str = fostlib::coerce<fostlib::nullable<f5::u8view>>(*rule);
                 if ( str ) {
-                    if ( str == "null" && data.isnull() ) return true;
-                    else if ( str == "object" && data.isobject() ) return true;
-                    else return false;
+                    return data.apply_visitor(typecheck{str.value()});
                 }
             } else {
+                /// The correct behaviour is to ignore unknown assertions, but for now
+                /// we throw until we believe the implementation is complete enough
                 throw fostlib::exceptions::not_implemented(__func__, "Assertion", rule.key());
             }
         }
