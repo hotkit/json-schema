@@ -30,6 +30,23 @@ add_custom_command(OUTPUT test-invalid-all
             null.json
     )
 
+add_custom_command(OUTPUT test-null
+        COMMAND json-schema-validator -b false
+            --schema ${CMAKE_CURRENT_SOURCE_DIR}/null.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/null.json
+        MAIN_DEPENDENCY null.schema.json
+        DEPENDS
+            null.json
+    )
+add_custom_command(OUTPUT test-null-invalid
+        COMMAND json-schema-validator -b false -i true
+            --schema ${CMAKE_CURRENT_SOURCE_DIR}/null.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/alltypes.json
+        MAIN_DEPENDENCY null.schema.json
+        DEPENDS
+            alltypes.json
+    )
+
 add_custom_command(OUTPUT test-valid-all
         COMMAND json-schema-validator -b false
             --schema ${CMAKE_CURRENT_SOURCE_DIR}/any.schema.json
@@ -46,6 +63,8 @@ add_custom_target(json-schema-tests DEPENDS
         test-alltypes
         test-alltypes-invalid
         test-invalid-all
+        test-null
+        test-null-invalid
         test-valid-all
     )
 add_dependencies(check json-schema-tests)

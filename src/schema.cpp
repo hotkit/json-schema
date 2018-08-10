@@ -21,7 +21,8 @@ namespace {
             } else if ( rule.key() == "type" ) {
                 const auto str = fostlib::coerce<fostlib::nullable<f5::u8view>>(*rule);
                 if ( str ) {
-                    if ( str == "object" && data.isobject() ) return true;
+                    if ( str == "null" && data.isnull() ) return true;
+                    else if ( str == "object" && data.isobject() ) return true;
                     else return false;
                 }
             } else {
