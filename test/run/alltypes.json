@@ -1,0 +1,8 @@
+{
+    "null-type": null,
+    "boolean-type": true,
+    "string-type": "Hello world",
+    "integer-type": 1234,
+    "double-type": 3.1415,
+    "array-type": []
+}
