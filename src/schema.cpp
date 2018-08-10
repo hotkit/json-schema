@@ -30,13 +30,14 @@ namespace {
     };
 
 
-    std::optional<f5::json_schema::validation_error> validate(
-        f5::json schema, f5::jpointer spos, f5::json data, f5::jpointer dpos
+    std::optional<f5::json::schema::error> validate(
+        f5::json::value schema, f5::json::pointer spos,
+        f5::json::value data, f5::json::pointer dpos
     ) {
         for ( const auto &rule : schema[spos].object() ) {
             if ( rule.first == "not" ) {
                 if ( not validate(schema, spos / rule.first, data, dpos) ) {
-                    return f5::json_schema::validation_error{"not", spos, dpos};
+                    return f5::json::schema::error{"not", spos, dpos};
                 }
             } else if ( rule.first == "properties" ) {
                 if ( rule.second.isobject() ) {
@@ -54,7 +55,7 @@ namespace {
                 const auto str = fostlib::coerce<fostlib::nullable<f5::u8view>>(rule.second);
                 if ( str ) {
                     if ( not data[dpos].apply_visitor(typecheck{str.value()}) ) {
-                        return f5::json_schema::validation_error{"type", spos, dpos};
+                        return f5::json::schema::error{"type", spos, dpos};
                     }
                 } else {
                     throw fostlib::exceptions::not_implemented(__func__, "type check", rule.second);
@@ -65,14 +66,14 @@ namespace {
                 throw fostlib::exceptions::not_implemented(__func__, "Assertion", rule.first);
             }
         }
-        return std::optional<f5::json_schema::validation_error>{};
+        return std::optional<f5::json::schema::error>{};
     }
 
 
 }
 
 
-auto f5::js::json_schema::schema::validate(json j) const -> std::optional<validation_error> {
-    return ::validate(validation, jpointer{}, j, jpointer{});
+auto f5::json::schema::validate(value j) const -> std::optional<error> {
+    return ::validate(validation, pointer{}, j, pointer{});
 }
 

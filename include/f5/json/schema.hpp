@@ -14,47 +14,42 @@
 namespace f5 {
 
 
-    inline namespace js {
+    namespace json {
 
 
-        using json = fostlib::json;
-        using jpointer = fostlib::jcursor;
+        using value = fostlib::json;
+        using pointer = fostlib::jcursor;
 
 
-        namespace json_schema {
+        /**
+            ## JSON Schema
 
+            Stores a JSON schema and allows it to be used to validate other JSON
+            instances.
+            */
+        class schema {
+            value validation;
 
-            struct validation_error {
+        public:
+            schema(value v)
+            : validation(std::move(v)) {
+            }
+
+            value assertions() const {
+                return validation;
+            }
+
+            /// In the case of a validation error then this describes where it
+            /// happened
+            struct error {
                 fostlib::string assertion;
-                jpointer spos, dpos;
+                pointer spos, dpos;
             };
 
-
-            /**
-                ## JSON Schema
-
-                Stores a JSON schema and allows it to be used to validate other JSON
-                instances.
-             */
-            class schema {
-                json validation;
-
-            public:
-                schema(json v)
-                : validation(std::move(v)) {
-                }
-
-                json assertions() const {
-                    return validation;
-                }
-
-                /// If the schema doesn't validate return the first position
-                /// in the schema that fails.
-                std::optional<validation_error> validate(json) const;
-            };
-
-
-        }
+            /// If the schema doesn't validate return the first position
+            /// in the schema that fails.
+            std::optional<error> validate(value) const;
+        };
 
 
     }

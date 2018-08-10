@@ -22,11 +22,11 @@ namespace {
         "json-schema-validator", "Schema file name", "any.schema.json", true);
 
     auto load_json(fostlib::string fn) {
-        return f5::json::parse(
+        return f5::json::value::parse(
             fostlib::utf::load_file(fostlib::coerce<boost::filesystem::path>(fn)));
     }
 
-    void print(f5::json_schema::schema s, f5::json d, f5::json_schema::validation_error e) {
+    void print(f5::json::schema s, f5::json::value d, f5::json::schema::error e) {
         std::cout << "Assertion: " << e.assertion <<
             "\nSchema position: " << e.spos <<
             "\nData position: " << e.dpos <<
@@ -44,7 +44,7 @@ FSL_MAIN(
     args.commandSwitch("v", c_verbose);
     args.commandSwitch("-schema", c_schema);
 
-    const f5::json_schema::schema s{load_json(c_schema.value())};
+    const f5::json::schema s{load_json(c_schema.value())};
 
     for ( const auto &arg : args ) {
         if ( c_verbose.value() ) {
