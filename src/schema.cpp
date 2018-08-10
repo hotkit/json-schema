@@ -17,7 +17,7 @@ namespace {
         bool validates{true};
         for ( auto rule = schema[spos].begin(), e = schema[spos].end(); rule != e && validates; ++rule ) {
             if ( rule.key() == "not" ) {
-                validates = not validate(*rule, std::move(spos), std::move(data), std::move(dpos));
+                validates = not validate(*rule, spos, data, dpos);
             } else {
                 throw fostlib::exceptions::not_implemented(__func__, "Assertion", rule.key());
             }
