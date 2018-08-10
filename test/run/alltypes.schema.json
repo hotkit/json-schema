@@ -1,3 +1,8 @@
 {
-    "type": "object"
+    "type": "object",
+    "properties": {
+        "null-type": {
+            "type" : "null"
+        }
+    }
 }

@@ -25,6 +25,14 @@ namespace {
         return f5::json::parse(
             fostlib::utf::load_file(fostlib::coerce<boost::filesystem::path>(fn)));
     }
+
+    void print(f5::json_schema::schema s, f5::json d, f5::json_schema::validation_error e) {
+        std::cout << "Assertion: " << e.assertion <<
+            "\nSchema position: " << e.spos <<
+            "\nData position: " << e.dpos <<
+            "\nSchema: " << s.assertions()[e.spos] <<
+            "\nData: " << d[e.dpos] << std::endl;
+    }
 }
 
 
@@ -44,13 +52,14 @@ FSL_MAIN(
         }
         const auto j = load_json(arg);
         if ( c_check_invalid.value() ) {
-            if ( s.validate(j) ) {
+            if ( const auto v = s.validate(j); not v ) {
                 std::cout << arg << " validated when it should not have" << std::endl;
                 return 2;
             }
         } else {
-            if ( not s.validate(j) ) {
+            if ( const auto v = s.validate(j); v ) {
                 std::cout << arg << " did not validate" << std::endl;
+                print(s, j, *v);
                 return 1;
             }
         }

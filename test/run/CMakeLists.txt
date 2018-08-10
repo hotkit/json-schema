@@ -1,6 +1,27 @@
 add_executable(json-schema-validator valid.cpp)
 target_link_libraries(json-schema-validator fost-cli f5-json-schema)
 
+add_custom_command(OUTPUT test-all
+        COMMAND json-schema-validator -b false
+            --schema ${CMAKE_CURRENT_SOURCE_DIR}/any.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/alltypes.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/null.json
+        MAIN_DEPENDENCY any.schema.json
+        DEPENDS
+            alltypes.json
+            null.json
+    )
+add_custom_command(OUTPUT test-all-invalid
+        COMMAND json-schema-validator -b false -i true
+            --schema ${CMAKE_CURRENT_SOURCE_DIR}/invalid.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/alltypes.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/null.json
+        MAIN_DEPENDENCY invalid.schema.json
+        DEPENDS
+            alltypes.json
+            null.json
+    )
+
 add_custom_command(OUTPUT test-alltypes
         COMMAND json-schema-validator -b false
             --schema ${CMAKE_CURRENT_SOURCE_DIR}/alltypes.schema.json
@@ -9,24 +30,12 @@ add_custom_command(OUTPUT test-alltypes
         DEPENDS
             alltypes.json
     )
-
 add_custom_command(OUTPUT test-alltypes-invalid
         COMMAND json-schema-validator -b false -i true
             --schema ${CMAKE_CURRENT_SOURCE_DIR}/alltypes.schema.json
             ${CMAKE_CURRENT_SOURCE_DIR}/null.json
         MAIN_DEPENDENCY alltypes.schema.json
         DEPENDS
-            null.json
-    )
-
-add_custom_command(OUTPUT test-invalid-all
-        COMMAND json-schema-validator -b false -i true
-            --schema ${CMAKE_CURRENT_SOURCE_DIR}/invalid.schema.json
-            ${CMAKE_CURRENT_SOURCE_DIR}/alltypes.json
-            ${CMAKE_CURRENT_SOURCE_DIR}/null.json
-        MAIN_DEPENDENCY invalid.schema.json
-        DEPENDS
-            alltypes.json
             null.json
     )
 
@@ -47,24 +56,34 @@ add_custom_command(OUTPUT test-null-invalid
             alltypes.json
     )
 
-add_custom_command(OUTPUT test-valid-all
+
+## Check all of the schemas against the JSON schema itself. Any failure
+## here should be able to act as a "todo" list against the validator.
+add_custom_command(OUTPUT test-z-json-schema
         COMMAND json-schema-validator -b false
-            --schema ${CMAKE_CURRENT_SOURCE_DIR}/any.schema.json
-            ${CMAKE_CURRENT_SOURCE_DIR}/alltypes.json
-            ${CMAKE_CURRENT_SOURCE_DIR}/null.json
-        MAIN_DEPENDENCY any.schema.json
+            --schema ${CMAKE_CURRENT_SOURCE_DIR}/json-schema.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/alltypes.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/any.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/invalid.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/json-schema.schema.json
+            ${CMAKE_CURRENT_SOURCE_DIR}/null.schema.json
+        MAIN_DEPENDENCY json-schema.schema.json
         DEPENDS
-            alltypes.json
-            null.json
+            alltypes.schema.json
+            any.schema.json
+            invalid.schema.json
+            json-schema.schema.json
+            null.schema.json
     )
 
 
 add_custom_target(json-schema-tests DEPENDS
+        test-all
+        test-all-invalid
         test-alltypes
         test-alltypes-invalid
-        test-invalid-all
         test-null
         test-null-invalid
-        test-valid-all
+#         test-z-json-schema
     )
 add_dependencies(check json-schema-tests)
