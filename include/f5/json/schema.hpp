@@ -8,17 +8,13 @@
 
 #pragma once
 
-#include <fost/json>
+#include <f5/json/validator.hpp>
 
 
 namespace f5 {
 
 
     namespace json {
-
-
-        using value = fostlib::json;
-        using pointer = fostlib::jcursor;
 
 
         /**
@@ -39,16 +35,9 @@ namespace f5 {
                 return validation;
             }
 
-            /// In the case of a validation error then this describes where it
-            /// happened
-            struct error {
-                fostlib::string assertion;
-                pointer spos, dpos;
-            };
-
             /// If the schema doesn't validate return the first position
             /// in the schema that fails.
-            std::optional<error> validate(value) const;
+            validation::result validate(value) const;
         };
 
 

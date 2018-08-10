@@ -1,5 +1,7 @@
 add_library(f5-json-schema
+        assertions.cpp
         schema.cpp
+        validator.cpp
     )
 target_include_directories(f5-json-schema PUBLIC ../include)
 target_link_libraries(f5-json-schema fost-core)

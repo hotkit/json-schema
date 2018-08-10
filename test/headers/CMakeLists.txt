@@ -1,4 +1,5 @@
 add_library(json-schema-headers-tests STATIC EXCLUDE_FROM_ALL
+        assertions.cpp
         schema.cpp
         validator.cpp
     )

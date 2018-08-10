@@ -5,7 +5,7 @@
     See <http://www.boost.org/LICENSE_1_0.txt>
 */
 
-#include <f5/json/validator.hpp>
+#include <f5/json/schema.hpp>
 
 #include <fost/file>
 #include <fost/main>
@@ -26,7 +26,7 @@ namespace {
             fostlib::utf::load_file(fostlib::coerce<boost::filesystem::path>(fn)));
     }
 
-    void print(f5::json::schema s, f5::json::value d, f5::json::schema::error e) {
+    void print(f5::json::schema s, f5::json::value d, f5::json::validation::result::error e) {
         std::cout << "Assertion: " << e.assertion <<
             "\nSchema position: " << e.spos <<
             "\nData position: " << e.dpos <<
@@ -59,7 +59,7 @@ FSL_MAIN(
         } else {
             if ( const auto v = s.validate(j); v ) {
                 std::cout << arg << " did not validate" << std::endl;
-                print(s, j, *v);
+                print(s, j, v.outcome.value());
                 return 1;
             }
         }
