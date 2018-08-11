@@ -47,14 +47,14 @@ namespace {
 }
 
 
-auto f5::json::validation::next_error(
+auto f5::json::validation::first_error(
     value schema, pointer spos, value data, pointer dpos
 ) -> result {
     for ( const auto &rule : schema[spos].object() ) {
         const auto apos = g_assertions.find(rule.first);
         if ( apos != g_assertions.end() ) {
             const auto v = apos->second(apos->first, rule.second, schema, spos, data, dpos);
-            if ( v ) return v;
+            if ( not v ) return v;
         } else {
             /// The correct behaviour is to ignore unknown assertions, but for now
             /// we throw until we believe the implementation is complete enough

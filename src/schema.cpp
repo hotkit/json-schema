@@ -10,6 +10,6 @@
 
 
 auto f5::json::schema::validate(value j) const -> validation::result {
-    return validation::next_error(validation, pointer{}, j, pointer{});
+    return validation::first_error(validation, pointer{}, j, pointer{});
 }
 

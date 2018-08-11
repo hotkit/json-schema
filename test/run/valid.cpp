@@ -52,12 +52,12 @@ FSL_MAIN(
         }
         const auto j = load_json(arg);
         if ( c_check_invalid.value() ) {
-            if ( const auto v = s.validate(j); not v ) {
+            if ( const auto v = s.validate(j); v ) {
                 std::cout << arg << " validated when it should not have" << std::endl;
                 return 2;
             }
         } else {
-            if ( const auto v = s.validate(j); v ) {
+            if ( const auto v = s.validate(j); not v ) {
                 std::cout << arg << " did not validate" << std::endl;
                 print(s, j, v.outcome.value());
                 return 1;

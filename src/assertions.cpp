@@ -22,10 +22,11 @@ const f5::json::assertion::checker f5::json::assertion::notchecker = [](
     f5::json::value schema, f5::json::pointer spos,
     f5::json::value data, f5::json::pointer dpos
 ) {
-    if ( not validation::next_error(schema, spos / rule, data, dpos) ) {
+    if ( validation::first_error(schema, spos / rule, data, dpos) ) {
         return validation::result{rule, spos, dpos};
+    } else {
+        return validation::result{};
     }
-    return validation::result{};
 };
 
 
@@ -37,9 +38,9 @@ const f5::json::assertion::checker f5::json::assertion::propertieschecker = [](
     if ( part.isobject() ) {
         for ( const auto &p : part.object() ) {
             if ( data[dpos].has_key(p.first) ) {
-                const auto v = validation::next_error(
+                const auto v = validation::first_error(
                     schema, spos / rule / p.first, data, dpos / p.first);
-                if ( v ) return v;
+                if ( not v ) return v;
             }
         }
     } else {

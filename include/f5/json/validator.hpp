@@ -42,8 +42,11 @@ namespace f5 {
                 : outcome{error{assertion, spos, dpos}} {
                 }
 
+                /// Return `true` if the result is that validation *passed*.
+                /// When a value of `false` is returned there will be an
+                /// error stored in the `outcome` field.
                 explicit operator bool () const {
-                    return outcome.has_value();
+                    return not outcome.has_value();
                 }
             };
 
@@ -51,7 +54,7 @@ namespace f5 {
             /// Validate part of an object against part of a schema. Typically
             /// you will want to call the `validate` member on a schema instance
             /// to perform validation.
-            result next_error(value schema, pointer spos, value data, pointer dpos);
+            result first_error(value schema, pointer spos, value data, pointer dpos);
 
 
         }
