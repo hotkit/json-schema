@@ -13,9 +13,14 @@ const f5::json::assertion::checker f5::json::assertion::pattern_properties_check
     f5::json::value schema, f5::json::pointer spos,
     f5::json::value data, f5::json::pointer dpos
 ) {
-    if ( schema[spos].isobject() ) {
+    if ( schema[spos].has_key("properties") ) {
+        /// The schema has a `properties` assertion, in which case this
+        /// assertion will run after that as part of the properies checks.
+        return validation::result{};
+    } else if ( schema[spos].isobject() ) {
+        throw fostlib::exceptions::not_implemented(__func__, "pattern_properties_checker -- object", part);
     } else {
-        throw fostlib::exceptions::not_implemented(__func__, "pattern_properties_checker", part);
+        throw fostlib::exceptions::not_implemented(__func__, "pattern_properties_checker -- not object", part);
     }
     return validation::result{};
 };
