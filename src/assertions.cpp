@@ -89,6 +89,14 @@ const f5::json::assertion::checker f5::json::assertion::typechecker = [](
         if ( not data[dpos].apply_visitor(typecheck{str.value()}) ) {
             return validation::result{rule, spos, dpos};
         }
+    } else if ( part.isarray() ) {
+        for ( const auto t : part ) {
+            const auto str = fostlib::coerce<f5::u8view>(t);
+            if ( data[dpos].apply_visitor(typecheck{str}) ) {
+                return validation::result{};
+            }
+        }
+        return validation::result{rule, spos, dpos};
     } else {
         throw fostlib::exceptions::not_implemented(__func__, "type check", part);
     }

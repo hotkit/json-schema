@@ -1,2 +1,5 @@
+2018-08-12  Kirit Saelensminde  <kirit@felspar.com>
+ Add stress tests that download parts of the full test suite which shows that `not` is fully implemented.
+
 2018-08-11  Kirit Saelensminde  <kirit@felspar.com>
  Implemented some initial basic checks that should be a useful start.

@@ -50,6 +50,11 @@ namespace {
 auto f5::json::validation::first_error(
     value schema, pointer spos, value data, pointer dpos
 ) -> result {
+    if ( schema[spos] == fostlib::json(true) ) {
+        return result{};
+    } else if ( schema[spos] == fostlib::json(false) ) {
+        return result{"false", spos, dpos};
+    }
     for ( const auto &rule : schema[spos].object() ) {
         const auto apos = g_assertions.find(rule.first);
         if ( apos != g_assertions.end() ) {
