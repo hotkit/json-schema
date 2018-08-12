@@ -11,3 +11,6 @@ if(CMAKE_VERSION VERSION_LESS "3.8")
 else()
     target_compile_features(f5-json-schema INTERFACE cxx_std_17)
 endif()
+install(TARGETS f5-json-schema
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib)
