@@ -35,9 +35,10 @@ namespace {
             a["definitions"] = f5::json::assertion::always;
 
             /// These are the actual assertions that have been implemented
-            a["not"] = f5::json::assertion::notchecker;
-            a["properties"] = f5::json::assertion::propertieschecker;
-            a["type"] = f5::json::assertion::typechecker;
+            a["not"] = f5::json::assertion::not_checker;
+            a["patternProperties"] = f5::json::assertion::pattern_properties_checker;
+            a["properties"] = f5::json::assertion::properties_checker;
+            a["type"] = f5::json::assertion::type_checker;
 
             /// Return the map for later use
             return a;
