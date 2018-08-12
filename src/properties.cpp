@@ -39,6 +39,10 @@ const f5::json::assertion::checker f5::json::assertion::properties_checker = [](
                 if ( not v ) return v;
             }
         }
+        if ( schema.has_key(spos / "patternProperties") ) {
+            throw fostlib::exceptions::not_implemented(__func__,
+                "properties -> patternProperties", schema[spos / "patternProperties"]);
+        };
     } else {
         throw fostlib::exceptions::not_implemented(__func__,
             "properties check must be an object", part);

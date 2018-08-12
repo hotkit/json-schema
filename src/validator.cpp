@@ -35,6 +35,7 @@ namespace {
             a["definitions"] = f5::json::assertion::always;
 
             /// These are the actual assertions that have been implemented
+            a["maxItems"] = f5::json::assertion::max_items_checker;
             a["not"] = f5::json::assertion::not_checker;
             a["patternProperties"] = f5::json::assertion::pattern_properties_checker;
             a["properties"] = f5::json::assertion::properties_checker;
