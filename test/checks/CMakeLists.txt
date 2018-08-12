@@ -1,6 +1,3 @@
-add_executable(json-schema-validator valid.cpp)
-target_link_libraries(json-schema-validator fost-cli f5-json-schema)
-
 add_custom_command(OUTPUT test-all
         COMMAND json-schema-validator -b false
             --schema ${CMAKE_CURRENT_SOURCE_DIR}/any.schema.json
