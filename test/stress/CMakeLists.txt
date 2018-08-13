@@ -11,12 +11,12 @@ add_custom_command(OUTPUT json-schema-testsuite-v7-not
             not.json
     )
 add_custom_command(OUTPUT json-schema-testsuite-v7-properties
-        COMMAND json-schema-testsuite -b false -v true
+        COMMAND json-schema-testsuite -b false
             properties.json
     )
 
 add_custom_target(json-schema-testsuite-v7 DEPENDS
         json-schema-testsuite-v7-not
-#         json-schema-testsuite-v7-properties
+        json-schema-testsuite-v7-properties
     )
 add_dependencies(stress json-schema-testsuite json-schema-testsuite-v7)

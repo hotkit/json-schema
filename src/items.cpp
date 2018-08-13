@@ -24,3 +24,19 @@ const f5::json::assertion::checker f5::json::assertion::max_items_checker = [](
 };
 
 
+const f5::json::assertion::checker f5::json::assertion::min_items_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    value array = data[dpos];
+    if ( array.isarray() ) {
+        const auto count = fostlib::coerce<int64_t>(part);
+        if ( data[dpos].size() < count ) {
+            return validation::result{rule, spos, dpos};
+        }
+    }
+    return validation::result{};
+};
+
+

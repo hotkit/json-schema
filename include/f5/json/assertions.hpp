@@ -28,9 +28,11 @@ namespace f5 {
 
 
             extern const checker
+                additional_properties_checker,
                 always,
                 not_checker,
                 max_items_checker,
+                min_items_checker,
                 pattern_properties_checker,
                 properties_checker,
                 type_checker;

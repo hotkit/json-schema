@@ -21,10 +21,6 @@ namespace {
             a["$id"] = f5::json::assertion::always;
             a["$schema"] = f5::json::assertion::always;
 
-            /// The following are always implemented as part of another
-            /// assertion
-            a["additionalProperties"] = f5::json::assertion::always;
-
             /// The following are used for annotations, which we ignore
             /// for the purposes of validation.
             a["default"] = f5::json::assertion::always;
@@ -35,7 +31,9 @@ namespace {
             a["definitions"] = f5::json::assertion::always;
 
             /// These are the actual assertions that have been implemented
+            a["additionalProperties"] = f5::json::assertion::additional_properties_checker;
             a["maxItems"] = f5::json::assertion::max_items_checker;
+            a["minItems"] = f5::json::assertion::min_items_checker;
             a["not"] = f5::json::assertion::not_checker;
             a["patternProperties"] = f5::json::assertion::pattern_properties_checker;
             a["properties"] = f5::json::assertion::properties_checker;

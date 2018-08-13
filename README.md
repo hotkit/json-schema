@@ -10,7 +10,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 
 * `not` -- negates the contained check.
 * `type` -- type check against the JSON types (`null`, `boolean`, `object`, `array`, `number`, `string` and `integer`).
-* `properties` -- that the assertions for each property hold if present in the data.
+* `properties` -- that the assertions for each property hold if present in the data, together with `patternProperties` and `additionalProperties`.
 
 The schema used for testing is <http://json-schema.org/draft-07/schema#>.
 

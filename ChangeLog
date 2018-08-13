@@ -1,3 +1,6 @@
+2018-08-13  Kirit Saelensminde  <kirit@felspar.com>
+ Complete implementation for `properties` assertions.
+
 2018-08-12  Kirit Saelensminde  <kirit@felspar.com>
  Add stress tests that download parts of the full test suite which shows that `not` is fully implemented.
 
