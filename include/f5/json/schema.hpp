@@ -37,6 +37,9 @@ namespace f5 {
 
             /// If the schema doesn't validate return the first position
             /// in the schema that fails.
+            ///
+            /// It is safe to call this from multiple threads at the same
+            /// time.
             validation::result validate(value) const;
         };
 
