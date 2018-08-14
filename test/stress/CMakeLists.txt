@@ -5,6 +5,7 @@ endif()
 
 add_executable(json-schema-testsuite EXCLUDE_FROM_ALL testsuite.cpp)
 target_link_libraries(json-schema-testsuite f5-json-schema fost-cli fost-inet)
+add_dependencies(stress json-schema-testsuite)
 
 ## The to do list:
 ##
@@ -39,7 +40,7 @@ target_link_libraries(json-schema-testsuite f5-json-schema fost-cli fost-inet)
 ## * uniqueItems.json
 
 function(draftv7 name)
-    add_custom_command(OUTPUT json-schema-testsuite-v7-${name}
+    add_custom_command(TARGET json-schema-testsuite
             COMMAND json-schema-testsuite -b false
                 ${name}.json
         )
@@ -50,16 +51,6 @@ draftv7(boolean_schema)
 draftv7(maxItems)
 draftv7(minItems)
 draftv7(not)
-draftv7(patternProperties)
+# draftv7(patternProperties)
 draftv7(properties)
 
-add_custom_target(json-schema-testsuite-v7 DEPENDS
-        json-schema-testsuite-v7-additionalProperties
-        json-schema-testsuite-v7-boolean_schema
-        json-schema-testsuite-v7-maxItems
-        json-schema-testsuite-v7-minItems
-        json-schema-testsuite-v7-not
-#         json-schema-testsuite-v7-patternProperties
-        json-schema-testsuite-v7-properties
-    )
-add_dependencies(stress json-schema-testsuite json-schema-testsuite-v7)
