@@ -13,7 +13,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 * `maxItems` and `minItems` -- counts for the number of items in a JSON array.
 * `properties`, `patternProperties` and `additionalProperties` -- that the assertions for each property hold if present in the JSON object data..
 
-The schema used for testing is <http://json-schema.org/draft-07/schema#>.
+The schema used for testing is <http://json-schema.org/draft-07/schema#>. Progress can be seen by looking at the [to do list in the schema test cmake file](./test/stress/CMakeLists.txt).
 
 For type validation, if the underlying memory type is a `double` then it will only match against `number` even if there is no fractional part to the number. The JSON parser will correctly identify integers parsing JSON (and use the `int64_t` memory type for them), so this can only happen when JSON is produced by code that uses a `double`. The memory type `int64_t` will match both of the `number` and `integer` validation types.
 
