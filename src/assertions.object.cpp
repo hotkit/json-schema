@@ -137,3 +137,19 @@ const f5::json::assertion::checker f5::json::assertion::properties_checker = [](
 };
 
 
+const f5::json::assertion::checker f5::json::assertion::required_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    const auto obj = data[dpos];
+    if ( obj.isobject() ) {
+        for ( const auto &check : part ) {
+            if ( not obj.has_key(fostlib::coerce<f5::u8view>(check)) ) {
+                return validation::result(rule, spos, dpos);
+            }
+        }
+    }
+    return validation::result{};
+};
+
