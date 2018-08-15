@@ -32,7 +32,6 @@ add_dependencies(stress json-schema-testsuite)
 ## * propertyNames.json
 ## * ref.json
 ## * refRemote.json
-## * type.json
 ## * uniqueItems.json
 
 function(draftv7 name)
@@ -52,4 +51,5 @@ draftv7(not)
 draftv7(patternProperties)
 draftv7(properties)
 draftv7(required)
+draftv7(type)
 
