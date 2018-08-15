@@ -17,6 +17,26 @@ const f5::json::assertion::checker f5::json::assertion::always = [](
 };
 
 
+const f5::json::assertion::checker f5::json::assertion::enum_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    if ( part.isarray() ) {
+        const auto value = data[dpos];
+        for ( const auto &opt : part ) {
+            if ( value == opt ) {
+                return validation::result{};
+            }
+        }
+    } else {
+        throw fostlib::exceptions::not_implemented(__func__,
+            "enum_checker not array", part);
+    }
+    return validation::result{rule, spos, dpos};
+};
+
+
 const f5::json::assertion::checker f5::json::assertion::maximum_checker = [](
     f5::u8view rule, f5::json::value part,
     f5::json::value schema, f5::json::pointer spos,
@@ -61,6 +81,23 @@ const f5::json::assertion::checker f5::json::assertion::not_checker = [](
     } else {
         return validation::result{};
     }
+};
+
+
+const f5::json::assertion::checker f5::json::assertion::required_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    const auto obj = data[dpos];
+    if ( obj.isobject() ) {
+        for ( const auto &check : part ) {
+            if ( not obj.has_key(fostlib::coerce<f5::u8view>(check)) ) {
+                return validation::result(rule, spos, dpos);
+            }
+        }
+    }
+    return validation::result{};
 };
 
 
