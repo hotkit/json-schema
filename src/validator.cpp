@@ -6,6 +6,8 @@
 */
 
 #include <f5/json/assertions.hpp>
+#include <fost/insert>
+#include <fost/push_back>
 #include <fost/unicode>
 
 
@@ -15,30 +17,12 @@ namespace {
     const auto g_assertions =
         []() {
             std::map<f5::u8view, f5::json::assertion::checker> a;
-            /// The following are meta-data about the schema itself. They
-            /// should only appear on the root object, but we don't force
-            /// that.
-            a["$schema"] = f5::json::assertion::always;
-
-            /// Meta data that might appear at any location in the schema
-            a["$comment"] = f5::json::assertion::always;
-            a["$id"] = f5::json::assertion::always;
-
-            /// The following are used for annotations, which we ignore
-            /// for the purposes of validation.
-            a["default"] = f5::json::assertion::always;
-
-            /// This is used to group schemas so they can be referenced
-            /// later on. As such it always validates against the JSON
-            /// data.
-            a["definitions"] = f5::json::assertion::always;
-
-            /// These are the actual assertions that have been implemented
             a["additionalProperties"] = f5::json::assertion::additional_properties_checker;
             a["const"] = f5::json::assertion::const_checker;
             a["enum"] = f5::json::assertion::enum_checker;
             a["exclusiveMaximum"] = f5::json::assertion::exclusive_maximum_checker;
             a["exclusiveMinimum"] = f5::json::assertion::exclusive_minimum_checker;
+            a["items"] = f5::json::assertion::items_checker;
             a["maximum"] = f5::json::assertion::maximum_checker;
             a["maxItems"] = f5::json::assertion::max_items_checker;
             a["maxLength"] = f5::json::assertion::max_length_checker;
@@ -53,8 +37,6 @@ namespace {
             a["properties"] = f5::json::assertion::properties_checker;
             a["required"] = f5::json::assertion::required_checker;
             a["type"] = f5::json::assertion::type_checker;
-
-            /// Return the map for later use
             return a;
         }();
 
@@ -65,22 +47,37 @@ namespace {
 auto f5::json::validation::first_error(
     value schema, pointer spos, value data, pointer dpos
 ) -> result {
-    if ( schema[spos] == fostlib::json(true) ) {
-        return result{};
-    } else if ( schema[spos] == fostlib::json(false) ) {
-        return result{"false", spos, dpos};
-    }
-    for ( const auto &rule : schema[spos].object() ) {
-        const auto apos = g_assertions.find(rule.first);
-        if ( apos != g_assertions.end() ) {
-            const auto v = apos->second(apos->first, rule.second, schema, spos, data, dpos);
-            if ( not v ) return v;
+    try {
+        if ( schema[spos] == fostlib::json(true) ) {
+            return result{};
+        } else if ( schema[spos] == fostlib::json(false) ) {
+            return result{"false", spos, dpos};
+        } else if ( schema[spos].isobject() ) {
+            if ( schema[spos].has_key("$ref") ) {
+                return first_error(schema,
+                    fostlib::jcursor::parse_json_pointer_fragment(
+                        fostlib::coerce<f5::u8view>(schema[spos]["$ref"])),
+                    data, dpos);
+            } else {
+                for ( const auto &rule : schema[spos].object() ) {
+                    const auto apos = g_assertions.find(rule.first);
+                    if ( apos != g_assertions.end() ) {
+                        const auto v = apos->second(apos->first, rule.second, schema, spos, data, dpos);
+                        if ( not v ) return v;
+                    }
+                }
+            }
         } else {
-            /// The correct behaviour is to ignore unknown assertions, but for now
-            /// we throw until we believe the implementation is complete enough
-            throw fostlib::exceptions::not_implemented(__func__, "Assertion", rule.first);
+            throw fostlib::exceptions::not_implemented(__func__,
+                "A schema must be a boolean or an object", schema[spos]);
         }
+        return result{};
+    } catch ( fostlib::exceptions::exception &e ) {
+        fostlib::json::array_t proc;
+        fostlib::push_back(proc, fostlib::coerce<fostlib::json>(spos));
+        fostlib::push_back(proc, fostlib::coerce<fostlib::json>(dpos));
+        fostlib::insert(e.data(), "first_error", proc);
+        throw;
     }
-    return result{};
 }
 
