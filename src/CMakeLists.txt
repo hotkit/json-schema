@@ -1,6 +1,7 @@
 add_library(f5-json-schema
         assertions.cpp
         assertions.array.cpp
+        assertions.numeric.cpp
         assertions.object.cpp
         schema.cpp
         validator.cpp

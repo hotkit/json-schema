@@ -33,9 +33,13 @@ namespace {
             /// These are the actual assertions that have been implemented
             a["additionalProperties"] = f5::json::assertion::additional_properties_checker;
             a["enum"] = f5::json::assertion::enum_checker;
+            a["exclusiveMaximum"] = f5::json::assertion::exclusive_maximum_checker;
+            a["exclusiveMinimum"] = f5::json::assertion::exclusive_minimum_checker;
             a["maximum"] = f5::json::assertion::maximum_checker;
+            a["minimum"] = f5::json::assertion::minimum_checker;
             a["maxItems"] = f5::json::assertion::max_items_checker;
             a["minItems"] = f5::json::assertion::min_items_checker;
+            a["multipleOf"] = f5::json::assertion::multiple_of_checker;
             a["not"] = f5::json::assertion::not_checker;
             a["patternProperties"] = f5::json::assertion::pattern_properties_checker;
             a["properties"] = f5::json::assertion::properties_checker;

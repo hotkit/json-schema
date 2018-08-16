@@ -37,40 +37,6 @@ const f5::json::assertion::checker f5::json::assertion::enum_checker = [](
 };
 
 
-const f5::json::assertion::checker f5::json::assertion::maximum_checker = [](
-    f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
-) {
-    if ( const auto max{fostlib::coerce<std::optional<int64_t>>(part)}; max ) {
-        return data[dpos].apply_visitor(
-            [&](int64_t v) {
-                return max >= v ? validation::result{} : validation::result{rule, spos, dpos};
-            },
-            [&](double v) {
-                return max >= v ? validation::result{} : validation::result{rule, spos, dpos};
-            },
-            [](const auto &) {
-                return validation::result{};
-            });
-    } else if ( const auto max{fostlib::coerce<std::optional<double>>(part)}; max ) {
-        return data[dpos].apply_visitor(
-            [&](int64_t v) {
-                return max >= v ? validation::result{} : validation::result{rule, spos, dpos};
-            },
-            [&](double v) {
-                return max >= v ? validation::result{} : validation::result{rule, spos, dpos};
-            },
-            [](const auto &) {
-                return validation::result{};
-            });
-    } else {
-        throw fostlib::exceptions::not_implemented(__func__, "maximum--other", part);
-    }
-    return validation::result{};
-};
-
-
 const f5::json::assertion::checker f5::json::assertion::not_checker = [](
     f5::u8view rule, f5::json::value part,
     f5::json::value schema, f5::json::pointer spos,

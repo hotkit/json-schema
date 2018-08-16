@@ -9,7 +9,7 @@ A JSON schema validator that builds on the JSON implementation found in [fost-ba
 The specifications for them are taken from [_JSON Schema Validation: A Vocabulary for Structural Validation of JSON_ (draft 1)](https://www.ietf.org/id/draft-handrews-json-schema-validation-01.txt). The following assertions are supported:
 
 * `enum` -- Values must be in the specified set.
-* `maximum` -- Maximum value for numeric data.
+* `maximum`, `minimum`, `exclusiveMaximum`, `exlusiveMinimum`, `multipleOf` -- Value bounds checks for numeric data.
 * `maxItems` and `minItems` -- counts for the number of items in a JSON array.
 * `not` -- negates the contained check.
 * `properties`, `patternProperties` and `additionalProperties` -- that the assertions for each property hold if present in the JSON object data.
