@@ -18,8 +18,11 @@ namespace {
             /// The following are meta-data about the schema itself. They
             /// should only appear on the root object, but we don't force
             /// that.
-            a["$id"] = f5::json::assertion::always;
             a["$schema"] = f5::json::assertion::always;
+
+            /// Meta data that might appear at any location in the schema
+            a["$comment"] = f5::json::assertion::always;
+            a["$id"] = f5::json::assertion::always;
 
             /// The following are used for annotations, which we ignore
             /// for the purposes of validation.
@@ -32,6 +35,7 @@ namespace {
 
             /// These are the actual assertions that have been implemented
             a["additionalProperties"] = f5::json::assertion::additional_properties_checker;
+            a["const"] = f5::json::assertion::const_checker;
             a["enum"] = f5::json::assertion::enum_checker;
             a["exclusiveMaximum"] = f5::json::assertion::exclusive_maximum_checker;
             a["exclusiveMinimum"] = f5::json::assertion::exclusive_minimum_checker;

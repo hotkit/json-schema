@@ -30,6 +30,7 @@ namespace f5 {
             extern const checker
                 additional_properties_checker,
                 always,
+                const_checker,
                 enum_checker,
                 exclusive_maximum_checker,
                 exclusive_minimum_checker,
