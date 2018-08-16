@@ -84,6 +84,22 @@ const f5::json::assertion::checker f5::json::assertion::enum_checker = [](
 };
 
 
+const f5::json::assertion::checker f5::json::assertion::if_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    const auto passed = validation::first_error(schema, spos / rule, data, dpos);
+    if ( passed && schema.has_key("then") ) {
+        return validation::first_error(schema, spos / "then", data, dpos);
+    } else if ( not passed && schema.has_key("else") ) {
+        return validation::first_error(schema, spos / "else", data, dpos);
+    } else {
+        return validation::result{};
+    }
+};
+
+
 const f5::json::assertion::checker f5::json::assertion::not_checker = [](
     f5::u8view rule, f5::json::value part,
     f5::json::value schema, f5::json::pointer spos,

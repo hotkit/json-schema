@@ -37,6 +37,7 @@ namespace f5 {
                 enum_checker,
                 exclusive_maximum_checker,
                 exclusive_minimum_checker,
+                if_checker,
                 items_checker,
                 maximum_checker,
                 max_items_checker,

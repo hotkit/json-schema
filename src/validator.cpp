@@ -24,6 +24,7 @@ namespace {
             a["enum"] = f5::json::assertion::enum_checker;
             a["exclusiveMaximum"] = f5::json::assertion::exclusive_maximum_checker;
             a["exclusiveMinimum"] = f5::json::assertion::exclusive_minimum_checker;
+            a["if"] = f5::json::assertion::if_checker;
             a["items"] = f5::json::assertion::items_checker;
             a["maximum"] = f5::json::assertion::maximum_checker;
             a["maxItems"] = f5::json::assertion::max_items_checker;
