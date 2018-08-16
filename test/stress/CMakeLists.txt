@@ -11,8 +11,6 @@ add_dependencies(stress json-schema-testsuite)
 ##
 ## * definitions.json
 ## * dependencies.json
-## * pattern.json
-## * propertyNames.json
 ## * ref.json
 ## * refRemote.json
 
@@ -31,6 +29,7 @@ draftv7(const)
 draftv7(contains)
 draftv7(default)
 # draftv7(definitions)
+# draftv7(dependencies)
 draftv7(enum)
 draftv7(exclusiveMaximum)
 draftv7(exclusiveMinimum)
@@ -47,10 +46,12 @@ draftv7(minProperties)
 draftv7(multipleOf)
 draftv7(not)
 draftv7(oneOf)
+draftv7(pattern)
 draftv7(patternProperties)
 draftv7(properties)
 draftv7(propertyNames)
 # draftv7(ref)
+# draftv7(refRemote)
 draftv7(required)
 draftv7(type)
 draftv7(uniqueItems)

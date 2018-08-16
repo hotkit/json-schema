@@ -19,6 +19,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 * `maxLength` and `minLength` -- bounds for the number of code points in a string value.
 * `maxProperties` and `minProperties` -- counts for properties in a JSON object.
 * `not` -- negates the contained check.
+* `pattern` -- The regex must be found in a string value.
 * `properties`, `patternProperties` and `additionalProperties` -- that the assertions for each property hold if present in the JSON object data.
 * `propertyNames` -- names of object properties must conform to the provided schema.
 * `required` -- Object properties must include the specified strings.

@@ -50,6 +50,7 @@ namespace f5 {
                 multiple_of_checker,
                 not_checker,
                 one_of_checker,
+                pattern_checker,
                 pattern_properties_checker,
                 properties_checker,
                 property_names_checker,
