@@ -8,6 +8,7 @@ A JSON schema validator that builds on the JSON implementation found in [fost-ba
 
 The specifications for them are taken from [_JSON Schema Validation: A Vocabulary for Structural Validation of JSON_ (draft 1)](https://www.ietf.org/id/draft-handrews-json-schema-validation-01.txt). The following assertions are supported:
 
+* `allOf`, `anyOf` and `oneOf` -- Values must conform to a specific number of the provided schemas.
 * `const` -- Values must be equal to the one in the schema.
 * `contains` -- At least one value in an array conforms to the schema.
 * `enum` -- Values must be in the specified set.

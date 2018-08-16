@@ -8,6 +8,40 @@
 #include <f5/json/assertions.hpp>
 
 
+const f5::json::assertion::checker f5::json::assertion::all_of_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    if ( not part.isarray() || part.size() == 0 ) {
+        throw fostlib::exceptions::not_implemented(__func__,
+            "allOf -- must be a non-empty array", part);
+    }
+    for ( std::size_t index{}; index < part.size(); ++index ) {
+        const auto valid = validation::first_error(schema, spos / rule / index, data, dpos);
+        if ( not valid ) return valid;
+    }
+    return validation::result{};
+};
+
+
+const f5::json::assertion::checker f5::json::assertion::any_of_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    if ( not part.isarray() || part.size() == 0 ) {
+        throw fostlib::exceptions::not_implemented(__func__,
+            "anyOf -- must be a non-empty array", part);
+    }
+    for ( std::size_t index{}; index < part.size(); ++index ) {
+        const auto valid = validation::first_error(schema, spos / rule / index, data, dpos);
+        if ( valid ) return validation::result{};
+    }
+    return validation::result{rule, spos, dpos};
+};
+
+
 const f5::json::assertion::checker f5::json::assertion::always = [](
     f5::u8view rule, f5::json::value part,
     f5::json::value schema, f5::json::pointer spos,
@@ -59,6 +93,28 @@ const f5::json::assertion::checker f5::json::assertion::not_checker = [](
         return validation::result{rule, spos, dpos};
     } else {
         return validation::result{};
+    }
+};
+
+
+const f5::json::assertion::checker f5::json::assertion::one_of_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    if ( not part.isarray() || part.size() == 0 ) {
+        throw fostlib::exceptions::not_implemented(__func__,
+            "anyOf -- must be a non-empty array", part);
+    }
+    std::size_t count{};
+    for ( std::size_t index{}; index < part.size(); ++index && count < 2 ) {
+        const auto valid = validation::first_error(schema, spos / rule / index, data, dpos);
+        if ( valid ) ++count;
+    }
+    if ( count == 1 ) {
+        return validation::result{};
+    } else {
+        return validation::result{rule, spos, dpos};
     }
 };
 

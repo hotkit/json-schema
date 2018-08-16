@@ -9,12 +9,9 @@ add_dependencies(stress json-schema-testsuite)
 
 ## The to do list:
 ##
-## * allOf.json
-## * anyOf.json
 ## * definitions.json
 ## * dependencies.json
 ## * if-then-else.json
-## * oneOf.json
 ## * pattern.json
 ## * propertyNames.json
 ## * ref.json
@@ -28,6 +25,8 @@ endfunction()
 
 draftv7(additionalItems)
 draftv7(additionalProperties)
+draftv7(allOf)
+draftv7(anyOf)
 draftv7(boolean_schema)
 draftv7(const)
 draftv7(contains)
@@ -47,6 +46,7 @@ draftv7(minLength)
 draftv7(minProperties)
 draftv7(multipleOf)
 draftv7(not)
+draftv7(oneOf)
 draftv7(patternProperties)
 draftv7(properties)
 # draftv7(ref)

@@ -17,6 +17,8 @@ namespace {
         []() {
             std::map<f5::u8view, f5::json::assertion::checker> a;
             a["additionalProperties"] = f5::json::assertion::additional_properties_checker;
+            a["allOf"] = f5::json::assertion::all_of_checker;
+            a["anyOf"] = f5::json::assertion::any_of_checker;
             a["const"] = f5::json::assertion::const_checker;
             a["contains"] = f5::json::assertion::contains_checker;
             a["enum"] = f5::json::assertion::enum_checker;
@@ -33,6 +35,7 @@ namespace {
             a["minProperties"] = f5::json::assertion::min_properties_checker;
             a["multipleOf"] = f5::json::assertion::multiple_of_checker;
             a["not"] = f5::json::assertion::not_checker;
+            a["oneOf"] = f5::json::assertion::one_of_checker;
             a["patternProperties"] = f5::json::assertion::pattern_properties_checker;
             a["properties"] = f5::json::assertion::properties_checker;
             a["required"] = f5::json::assertion::required_checker;
