@@ -18,6 +18,7 @@ namespace {
             std::map<f5::u8view, f5::json::assertion::checker> a;
             a["additionalProperties"] = f5::json::assertion::additional_properties_checker;
             a["const"] = f5::json::assertion::const_checker;
+            a["contains"] = f5::json::assertion::contains_checker;
             a["enum"] = f5::json::assertion::enum_checker;
             a["exclusiveMaximum"] = f5::json::assertion::exclusive_maximum_checker;
             a["exclusiveMinimum"] = f5::json::assertion::exclusive_minimum_checker;

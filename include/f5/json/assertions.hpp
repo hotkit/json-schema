@@ -31,6 +31,7 @@ namespace f5 {
                 additional_properties_checker,
                 always,
                 const_checker,
+                contains_checker,
                 enum_checker,
                 exclusive_maximum_checker,
                 exclusive_minimum_checker,

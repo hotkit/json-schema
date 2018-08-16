@@ -8,6 +8,24 @@
 #include <f5/json/assertions.hpp>
 
 
+const f5::json::assertion::checker f5::json::assertion::contains_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    const auto array = data[dpos];
+    if( array.isarray() ) {
+        for ( std::size_t index{}; index < array.size(); ++index ) {
+            const auto valid = validation::first_error(
+                schema, spos / rule, data, dpos / index);
+            if ( valid ) return validation::result{};
+        }
+        return validation::result{rule, spos, dpos};
+    }
+    return validation::result{};
+};
+
+
 const f5::json::assertion::checker f5::json::assertion::items_checker = [](
     f5::u8view rule, f5::json::value part,
     f5::json::value schema, f5::json::pointer spos,

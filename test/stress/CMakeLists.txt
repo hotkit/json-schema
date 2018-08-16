@@ -11,7 +11,6 @@ add_dependencies(stress json-schema-testsuite)
 ##
 ## * allOf.json
 ## * anyOf.json
-## * contains.json
 ## * definitions.json
 ## * dependencies.json
 ## * if-then-else.json
@@ -32,6 +31,7 @@ draftv7(additionalItems)
 draftv7(additionalProperties)
 draftv7(boolean_schema)
 draftv7(const)
+draftv7(contains)
 draftv7(default)
 draftv7(enum)
 draftv7(exclusiveMaximum)

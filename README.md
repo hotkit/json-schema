@@ -9,6 +9,7 @@ A JSON schema validator that builds on the JSON implementation found in [fost-ba
 The specifications for them are taken from [_JSON Schema Validation: A Vocabulary for Structural Validation of JSON_ (draft 1)](https://www.ietf.org/id/draft-handrews-json-schema-validation-01.txt). The following assertions are supported:
 
 * `const` -- Values must be equal to the one in the schema.
+* `contains` -- At least one value in an array conforms to the schema.
 * `enum` -- Values must be in the specified set.
 * `items` and `additionalItems`-- Array items must confirm to the provided schemas.
 * `maximum`, `minimum`, `exclusiveMaximum`, `exlusiveMinimum`, `multipleOf` -- Value bounds checks for numeric data.
