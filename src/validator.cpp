@@ -6,7 +6,6 @@
 */
 
 #include <f5/json/assertions.hpp>
-#include <fost/insert>
 #include <fost/push_back>
 #include <fost/unicode>
 
@@ -76,7 +75,7 @@ auto f5::json::validation::first_error(
         fostlib::json::array_t proc;
         fostlib::push_back(proc, fostlib::coerce<fostlib::json>(spos));
         fostlib::push_back(proc, fostlib::coerce<fostlib::json>(dpos));
-        fostlib::insert(e.data(), "first_error", proc);
+        fostlib::push_back(e.data(), "first_error stack", proc);
         throw;
     }
 }

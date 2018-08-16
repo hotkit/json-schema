@@ -9,7 +9,6 @@ add_dependencies(stress json-schema-testsuite)
 
 ## The to do list:
 ##
-## * additionalItems.json
 ## * allOf.json
 ## * anyOf.json
 ## * contains.json
@@ -29,6 +28,7 @@ function(draftv7 name)
                 ${name}.json)
 endfunction()
 
+draftv7(additionalItems)
 draftv7(additionalProperties)
 draftv7(boolean_schema)
 draftv7(const)

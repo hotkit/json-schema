@@ -22,6 +22,13 @@ const f5::json::assertion::checker f5::json::assertion::items_checker = [](
                     schema, spos / rule / index, data, dpos / index);
                 if ( not valid ) return valid;
             }
+            if ( schema[spos].has_key("additionalItems") ) {
+                for ( std::size_t index{std::min(psize, dsize)}; index < dsize; ++index ) {
+                    const auto valid = validation::first_error(
+                        schema, spos / "additionalItems", data, dpos / index);
+                    if ( not valid ) return valid;
+                }
+            }
         } else  {
             for ( std::size_t index{}; index < data[dpos].size(); ++index ) {
                 const auto valid = validation::first_error(

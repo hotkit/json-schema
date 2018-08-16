@@ -10,7 +10,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 
 * `const` -- Values must be equal to the one in the schema.
 * `enum` -- Values must be in the specified set.
-* `items` -- Array items must confirm to the provided schemas.
+* `items` and `additionalItems`-- Array items must confirm to the provided schemas.
 * `maximum`, `minimum`, `exclusiveMaximum`, `exlusiveMinimum`, `multipleOf` -- Value bounds checks for numeric data.
 * `maxItems` and `minItems` -- bounds for the number of items in a JSON array.
 * `maxLength` and `minLength` -- bounds for the number of code points in a string value.
