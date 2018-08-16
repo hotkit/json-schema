@@ -10,6 +10,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 
 * `const` -- Values must be equal to the one in the schema.
 * `enum` -- Values must be in the specified set.
+* `items` -- Array items must confirm to the provided schemas.
 * `maximum`, `minimum`, `exclusiveMaximum`, `exlusiveMinimum`, `multipleOf` -- Value bounds checks for numeric data.
 * `maxItems` and `minItems` -- bounds for the number of items in a JSON array.
 * `maxLength` and `minLength` -- bounds for the number of code points in a string value.
@@ -26,5 +27,5 @@ For type validation, if the underlying memory type is a `double` then it will on
 
 ## The JSON Schema Testsuite
 
-The build target `json-schema-testsuite-v7` will download and run the tests that are found at the [_JSON Schema Test Suite_](https://github.com/json-schema-org/JSON-Schema-Test-Suite/tree/master/tests/draft7).
+The build target `json-schema-testsuite` will download and run the tests that are found at the [_JSON Schema Test Suite_](https://github.com/json-schema-org/JSON-Schema-Test-Suite/tree/master/tests/draft7).
 

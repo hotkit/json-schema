@@ -22,9 +22,12 @@ const f5::json::assertion::checker f5::json::assertion::items_checker = [](
                     schema, spos / rule / index, data, dpos / index);
                 if ( not valid ) return valid;
             }
-        } else {
-            throw fostlib::exceptions::not_implemented(__func__,
-                "items checker -- not array", part);
+        } else  {
+            for ( std::size_t index{}; index < data[dpos].size(); ++index ) {
+                const auto valid = validation::first_error(
+                    schema, spos / rule, data, dpos / index);
+                if ( not valid ) return valid;
+            }
         }
     }
     return validation::result{};
