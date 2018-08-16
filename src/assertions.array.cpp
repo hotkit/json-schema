@@ -91,3 +91,28 @@ const f5::json::assertion::checker f5::json::assertion::min_items_checker = [](
 };
 
 
+const f5::json::assertion::checker f5::json::assertion::unique_items_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    value array = data[dpos];
+    if ( array.isarray() ) {
+        if ( part == fostlib::json(true) ) {
+            std::set<f5::json::value> found;
+            for ( const auto item : array ) {
+                if ( found.find(item) != found.end() ) {
+                    return validation::result{rule, spos, dpos};
+                }
+                found.insert(item);
+            }
+        } else if ( part == fostlib::json(false) ) {
+            return validation::result{};
+        } else {
+            throw fostlib::exceptions::not_implemented(__func__,
+                "unique items -- must be true or false", part);
+        }
+    }
+    return validation::result{};
+};
+

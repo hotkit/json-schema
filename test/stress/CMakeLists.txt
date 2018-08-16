@@ -19,7 +19,6 @@ add_dependencies(stress json-schema-testsuite)
 ## * propertyNames.json
 ## * ref.json
 ## * refRemote.json
-## * uniqueItems.json
 
 function(draftv7 name)
     add_custom_command(TARGET json-schema-testsuite
@@ -33,6 +32,7 @@ draftv7(boolean_schema)
 draftv7(const)
 draftv7(contains)
 draftv7(default)
+# draftv7(definitions)
 draftv7(enum)
 draftv7(exclusiveMaximum)
 draftv7(exclusiveMinimum)
@@ -52,4 +52,5 @@ draftv7(properties)
 # draftv7(ref)
 draftv7(required)
 draftv7(type)
+draftv7(uniqueItems)
 

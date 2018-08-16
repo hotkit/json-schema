@@ -49,7 +49,8 @@ namespace f5 {
                 pattern_properties_checker,
                 properties_checker,
                 required_checker,
-                type_checker;
+                type_checker,
+                unique_items_checker;
 
 
         }

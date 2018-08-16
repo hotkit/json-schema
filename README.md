@@ -20,6 +20,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 * `properties`, `patternProperties` and `additionalProperties` -- that the assertions for each property hold if present in the JSON object data.
 * `required` -- Object properties must include the specified strings.
 * `type` -- type check against the JSON types (`null`, `boolean`, `object`, `array`, `number`, `string` and `integer`).
+* `uniqueItems` -- All values in an array are unique.
 
 The schema used for testing is <http://json-schema.org/draft-07/schema#>. Progress can be seen by looking at the [to do list in the schema test cmake file](./test/stress/CMakeLists.txt).
 
