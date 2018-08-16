@@ -36,9 +36,11 @@ namespace {
             a["exclusiveMaximum"] = f5::json::assertion::exclusive_maximum_checker;
             a["exclusiveMinimum"] = f5::json::assertion::exclusive_minimum_checker;
             a["maximum"] = f5::json::assertion::maximum_checker;
-            a["minimum"] = f5::json::assertion::minimum_checker;
             a["maxItems"] = f5::json::assertion::max_items_checker;
+            a["maxProperties"] = f5::json::assertion::max_properties_checker;
+            a["minimum"] = f5::json::assertion::minimum_checker;
             a["minItems"] = f5::json::assertion::min_items_checker;
+            a["minProperties"] = f5::json::assertion::min_properties_checker;
             a["multipleOf"] = f5::json::assertion::multiple_of_checker;
             a["not"] = f5::json::assertion::not_checker;
             a["patternProperties"] = f5::json::assertion::pattern_properties_checker;

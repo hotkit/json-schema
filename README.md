@@ -11,6 +11,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 * `enum` -- Values must be in the specified set.
 * `maximum`, `minimum`, `exclusiveMaximum`, `exlusiveMinimum`, `multipleOf` -- Value bounds checks for numeric data.
 * `maxItems` and `minItems` -- counts for the number of items in a JSON array.
+* `maxProperties` and `minProperties` -- counts for properties in a JSON object.
 * `not` -- negates the contained check.
 * `properties`, `patternProperties` and `additionalProperties` -- that the assertions for each property hold if present in the JSON object data.
 * `required` -- Object properties must include the specified strings.

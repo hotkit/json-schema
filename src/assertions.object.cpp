@@ -77,6 +77,36 @@ const f5::json::assertion::checker f5::json::assertion::additional_properties_ch
 };
 
 
+const f5::json::assertion::checker f5::json::assertion::max_properties_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    auto properties = data[dpos];
+    if ( not properties.isobject() ) return validation::result{};
+    if ( properties.size() <= fostlib::coerce<int64_t>(part) ) {
+        return validation::result{};
+    } else {
+        return validation::result(rule, spos, dpos);
+    }
+};
+
+
+const f5::json::assertion::checker f5::json::assertion::min_properties_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    auto properties = data[dpos];
+    if ( not properties.isobject() ) return validation::result{};
+    if ( properties.size() >= fostlib::coerce<int64_t>(part) ) {
+        return validation::result{};
+    } else {
+        return validation::result(rule, spos, dpos);
+    }
+};
+
+
 const f5::json::assertion::checker f5::json::assertion::pattern_properties_checker = [](
     f5::u8view rule, f5::json::value part,
     f5::json::value schema, f5::json::pointer spos,
