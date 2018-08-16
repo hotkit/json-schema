@@ -20,6 +20,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 * `maxProperties` and `minProperties` -- counts for properties in a JSON object.
 * `not` -- negates the contained check.
 * `properties`, `patternProperties` and `additionalProperties` -- that the assertions for each property hold if present in the JSON object data.
+* `propertyNames` -- names of object properties must conform to the provided schema.
 * `required` -- Object properties must include the specified strings.
 * `type` -- type check against the JSON types (`null`, `boolean`, `object`, `array`, `number`, `string` and `integer`).
 * `uniqueItems` -- All values in an array are unique.

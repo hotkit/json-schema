@@ -39,6 +39,7 @@ namespace {
             a["oneOf"] = f5::json::assertion::one_of_checker;
             a["patternProperties"] = f5::json::assertion::pattern_properties_checker;
             a["properties"] = f5::json::assertion::properties_checker;
+            a["propertyNames"] = f5::json::assertion::property_names_checker;
             a["required"] = f5::json::assertion::required_checker;
             a["type"] = f5::json::assertion::type_checker;
             a["uniqueItems"] = f5::json::assertion::unique_items_checker;

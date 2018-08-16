@@ -132,7 +132,6 @@ const f5::json::assertion::checker f5::json::assertion::pattern_properties_check
     return validation::result{};
 };
 
-
 const f5::json::assertion::checker f5::json::assertion::properties_checker = [](
     f5::u8view rule, f5::json::value part,
     f5::json::value schema, f5::json::pointer spos,
@@ -162,6 +161,22 @@ const f5::json::assertion::checker f5::json::assertion::properties_checker = [](
     } else {
         throw fostlib::exceptions::not_implemented(__func__,
             "properties check must be an object", part);
+    }
+    return validation::result{};
+};
+
+
+const f5::json::assertion::checker f5::json::assertion::property_names_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    auto properties = data[dpos];
+    if ( not properties.isobject() ) return validation::result{};
+    for ( const auto property : properties.object() ) {
+        const auto valid = validation::first_error(
+            schema, spos / rule, value(property.first), pointer{});
+        if ( not valid ) return validation::result{rule, spos, dpos};
     }
     return validation::result{};
 };
