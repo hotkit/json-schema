@@ -19,8 +19,6 @@ add_dependencies(stress json-schema-testsuite)
 ## * dependencies.json
 ## * if-then-else.json
 ## * items.json
-## * maxLength.json
-## * minLength.json
 ## * oneOf.json
 ## * pattern.json
 ## * propertyNames.json
@@ -42,9 +40,11 @@ draftv7(exclusiveMaximum)
 draftv7(exclusiveMinimum)
 draftv7(maximum)
 draftv7(maxItems)
+draftv7(maxLength)
 draftv7(maxProperties)
 draftv7(minimum)
 draftv7(minItems)
+draftv7(minLength)
 draftv7(minProperties)
 draftv7(multipleOf)
 draftv7(not)
