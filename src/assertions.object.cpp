@@ -77,6 +77,37 @@ const f5::json::assertion::checker f5::json::assertion::additional_properties_ch
 };
 
 
+const f5::json::assertion::checker f5::json::assertion::dependencies_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::value schema, f5::json::pointer spos,
+    f5::json::value data, f5::json::pointer dpos
+) {
+    if ( part.isobject() ) {
+        auto properties = data[dpos];
+        if ( not properties.isobject() ) return validation::result{};
+        for ( const auto &prop : properties.object() ) {
+            if ( part.has_key(prop.first) ) {
+                if ( part[prop.first].isarray() ) {
+                    for ( const auto name : part[prop.first] ) {
+                        if ( not properties.has_key(fostlib::coerce<f5::u8view>(name)) ) {
+                            return validation::result{rule, spos / rule / name, dpos};
+                        }
+                    }
+                } else {
+                    const auto valid = validation::first_error(
+                        schema, spos / rule / prop.first, data, dpos);
+                    if ( not valid ) return valid;
+                }
+            }
+        }
+    } else {
+        throw fostlib::exceptions::not_implemented(__func__,
+            "dependencies must be an object", part);
+    }
+    return validation::result{};
+};
+
+
 const f5::json::assertion::checker f5::json::assertion::max_properties_checker = [](
     f5::u8view rule, f5::json::value part,
     f5::json::value schema, f5::json::pointer spos,

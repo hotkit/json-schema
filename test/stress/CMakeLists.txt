@@ -10,7 +10,6 @@ add_dependencies(stress json-schema-testsuite)
 ## The to do list:
 ##
 ## * definitions.json
-## * dependencies.json
 ## * ref.json
 ## * refRemote.json
 
@@ -29,7 +28,7 @@ draftv7(const)
 draftv7(contains)
 draftv7(default)
 # draftv7(definitions)
-# draftv7(dependencies)
+draftv7(dependencies)
 draftv7(enum)
 draftv7(exclusiveMaximum)
 draftv7(exclusiveMinimum)

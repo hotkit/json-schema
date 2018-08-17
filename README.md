@@ -11,6 +11,7 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 * `allOf`, `anyOf` and `oneOf` -- Values must conform to a specific number of the provided schemas.
 * `const` -- Values must be equal to the one in the schema.
 * `contains` -- At least one value in an array conforms to the schema.
+* `dependencies` -- Object property checks depending on which exist in the data.
 * `enum` -- Values must be in the specified set.
 * `if`, `then` and `else` -- conditional evaluation of schemas.
 * `items` and `additionalItems`-- Array items must confirm to the provided schemas.

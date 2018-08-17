@@ -21,6 +21,7 @@ namespace {
             a["anyOf"] = f5::json::assertion::any_of_checker;
             a["const"] = f5::json::assertion::const_checker;
             a["contains"] = f5::json::assertion::contains_checker;
+            a["dependencies"] = f5::json::assertion::dependencies_checker;
             a["enum"] = f5::json::assertion::enum_checker;
             a["exclusiveMaximum"] = f5::json::assertion::exclusive_maximum_checker;
             a["exclusiveMinimum"] = f5::json::assertion::exclusive_minimum_checker;

@@ -34,6 +34,7 @@ namespace f5 {
                 any_of_checker,
                 const_checker,
                 contains_checker,
+                dependencies_checker,
                 enum_checker,
                 exclusive_maximum_checker,
                 exclusive_minimum_checker,
