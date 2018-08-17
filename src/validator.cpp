@@ -6,6 +6,7 @@
 */
 
 #include <f5/json/assertions.hpp>
+#include <f5/json/schema.cache.hpp>
 #include <fost/push_back>
 #include <fost/unicode>
 
@@ -62,10 +63,27 @@ auto f5::json::validation::first_error(
             return result{"false", spos, dpos};
         } else if ( schema[spos].isobject() ) {
             if ( schema[spos].has_key("$ref") ) {
-                return first_error(schema,
-                    fostlib::jcursor::parse_json_pointer_fragment(
-                        fostlib::coerce<f5::u8view>(schema[spos]["$ref"])),
-                    data, dpos);
+                const auto ref = fostlib::coerce<f5::u8view>(schema[spos]["$ref"]);
+                if ( ref.bytes() && *ref.begin() == '#' ) {
+                    return first_error(schema,
+                        fostlib::jcursor::parse_json_pointer_fragment(
+                            fostlib::coerce<f5::u8view>(schema[spos]["$ref"])),
+                        data, dpos);
+                } else {
+                    const auto cache = schema_cache::root_cache();
+                    if ( const auto frag = std::find(ref.begin(), ref.end(), '#'); frag == ref.end() ) {
+                        const auto &ref_schema = (*cache)[fostlib::url{ref}];
+                        throw fostlib::exceptions::not_implemented(__func__,
+                            "URL based schema lookups WITHOUT fragment", ref);
+                    } else {
+                        const fostlib::url u{f5::u8view{ref.begin(), frag}};
+                        const auto &ref_schema = (*cache)[u];
+                        return first_error(ref_schema.assertions(),
+                            fostlib::jcursor::parse_json_pointer_fragment(
+                                f5::u8view{frag, ref.end()}),
+                            data, dpos);
+                    }
+                }
             } else {
                 for ( const auto &rule : schema[spos].object() ) {
                     const auto apos = g_assertions.find(rule.first);

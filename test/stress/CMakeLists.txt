@@ -15,7 +15,7 @@ add_dependencies(stress json-schema-testsuite)
 
 function(draftv7 name)
     add_custom_command(TARGET json-schema-testsuite
-            COMMAND json-schema-testsuite -b false
+            COMMAND json-schema-testsuite -b false -p ${CMAKE_CURRENT_SOURCE_DIR}/../checks/json-schema.schema.json
                 ${name}.json)
 endfunction()
 
