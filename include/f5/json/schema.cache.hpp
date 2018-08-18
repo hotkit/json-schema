@@ -9,7 +9,7 @@
 #pragma once
 
 #include <f5/json/schema.hpp>
-#include <fost/internet>
+#include <fost/url>
 
 
 namespace f5 {
