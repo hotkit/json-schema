@@ -10,135 +10,137 @@
 
 const f5::json::assertion::checker f5::json::assertion::all_of_checker = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
     if ( not part.isarray() || part.size() == 0 ) {
-        throw fostlib::exceptions::not_implemented(__func__,
+        throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__,
             "allOf -- must be a non-empty array", part);
     }
     for ( std::size_t index{}; index < part.size(); ++index ) {
-        const auto valid = validation::first_error(schema, spos / rule / index, data, dpos);
+        auto valid = validation::first_error(an, an.spos / rule / index, an.dpos);
         if ( not valid ) return valid;
+        an.merge(std::move(valid));
     }
-    return validation::result{};
+    return validation::result{std::move(an)};
 };
 
 
 const f5::json::assertion::checker f5::json::assertion::any_of_checker = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
     if ( not part.isarray() || part.size() == 0 ) {
-        throw fostlib::exceptions::not_implemented(__func__,
+        throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__,
             "anyOf -- must be a non-empty array", part);
     }
     for ( std::size_t index{}; index < part.size(); ++index ) {
-        const auto valid = validation::first_error(schema, spos / rule / index, data, dpos);
-        if ( valid ) return validation::result{};
+        const auto valid = validation::first_error(an, an.spos / rule / index, an.dpos);
+        if ( valid ) return validation::result{std::move(an)};
     }
-    return validation::result{rule, spos, dpos};
+    return validation::result{rule, an.spos, an.dpos};
 };
 
 
 const f5::json::assertion::checker f5::json::assertion::always = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
-    return validation::result{};
+    return validation::result{std::move(an)};
 };
 
 
 const f5::json::assertion::checker f5::json::assertion::const_checker = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
-    if ( data[dpos] == part ) {
-        return validation::result{};
+    if ( an.data[an.dpos] == part ) {
+        return validation::result{std::move(an)};
     } else {
-        return validation::result{rule, spos, dpos};
+        return validation::result{rule, an.spos / rule, std::move(an.dpos)};
     }
 };
 
 
 const f5::json::assertion::checker f5::json::assertion::enum_checker = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
     if ( part.isarray() ) {
-        const auto value = data[dpos];
+        const auto value = an.data[an.dpos];
         for ( const auto &opt : part ) {
             if ( value == opt ) {
-                return validation::result{};
+                return validation::result{std::move(an)};
             }
         }
     } else {
-        throw fostlib::exceptions::not_implemented(__func__,
+        throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__,
             "enum_checker not array", part);
     }
-    return validation::result{rule, spos, dpos};
+    return validation::result{rule, an.spos / rule, an.dpos};
 };
 
 
 const f5::json::assertion::checker f5::json::assertion::if_checker = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
-    const auto passed = validation::first_error(schema, spos / rule, data, dpos);
-    if ( passed && schema.has_key("then") ) {
-        return validation::first_error(schema, spos / "then", data, dpos);
-    } else if ( not passed && schema.has_key("else") ) {
-        return validation::first_error(schema, spos / "else", data, dpos);
-    } else {
-        return validation::result{};
+    auto passed = validation::first_error(an, an.spos / rule, an.dpos);
+    const bool pflag{passed};
+    if ( pflag ) {
+        an.merge(std::move(passed));
     }
+    if ( pflag && an.schema[an.spos].has_key("then") ) {
+        auto valid = validation::first_error(an, an.spos / "then", an.dpos);
+        if ( not valid ) return valid;
+        an.merge(std::move(valid));
+    } else if ( not pflag && an.schema[an.spos].has_key("else") ) {
+        auto valid = validation::first_error(an, an.spos / "else", an.dpos);
+        if ( not valid ) return valid;
+        an.merge(std::move(valid));
+    }
+    return validation::result{std::move(an)};
 };
 
 
 const f5::json::assertion::checker f5::json::assertion::not_checker = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
-    if ( validation::first_error(schema, spos / rule, data, dpos) ) {
-        return validation::result{rule, spos, dpos};
+    if ( validation::first_error(an, an.spos / rule, an.dpos) ) {
+        return validation::result{rule, an.spos / rule, std::move(an.dpos)};
     } else {
-        return validation::result{};
+        return validation::result{std::move(an)};
     }
 };
 
 
 const f5::json::assertion::checker f5::json::assertion::one_of_checker = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
     if ( not part.isarray() || part.size() == 0 ) {
-        throw fostlib::exceptions::not_implemented(__func__,
+        throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__,
             "anyOf -- must be a non-empty array", part);
     }
     std::size_t count{};
     for ( std::size_t index{}; index < part.size(); ++index && count < 2 ) {
-        const auto valid = validation::first_error(schema, spos / rule / index, data, dpos);
-        if ( valid ) ++count;
+        auto valid = validation::first_error(an, an.spos / rule / index, an.dpos);
+        if ( valid ) {
+            an.merge(std::move(valid));
+            ++count;
+        }
     }
     if ( count == 1 ) {
-        return validation::result{};
+        return validation::result{std::move(an)};
     } else {
-        return validation::result{rule, spos, dpos};
+        return validation::result{rule, an.spos / rule, an.dpos};
     }
 };
 
 
 const f5::json::assertion::checker f5::json::assertion::type_checker = [](
     f5::u8view rule, f5::json::value part,
-    f5::json::value schema, f5::json::pointer spos,
-    f5::json::value data, f5::json::pointer dpos
+    f5::json::validation::annotations an
 ) {
     struct typecheck {
         f5::u8view type;
@@ -170,20 +172,21 @@ const f5::json::assertion::checker f5::json::assertion::type_checker = [](
     };
     const auto str = fostlib::coerce<fostlib::nullable<f5::u8view>>(part);
     if ( str ) {
-        if ( not data[dpos].apply_visitor(typecheck{str.value()}) ) {
-            return validation::result{rule, spos, dpos};
+        if ( not an.data[an.dpos].apply_visitor(typecheck{str.value()}) ) {
+            return validation::result{rule, std::move(an.spos), std::move(an.dpos)};
         }
     } else if ( part.isarray() ) {
         for ( const auto t : part ) {
             const auto str = fostlib::coerce<f5::u8view>(t);
-            if ( data[dpos].apply_visitor(typecheck{str}) ) {
-                return validation::result{};
+            if ( an.data[an.dpos].apply_visitor(typecheck{str}) ) {
+                return validation::result{std::move(an)};
             }
         }
-        return validation::result{rule, spos, dpos};
+        return validation::result{rule, std::move(an.spos), std::move(an.dpos)};
     } else {
-        throw fostlib::exceptions::not_implemented(__func__, "type check", part);
+        throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__,
+            "type check", part);
     }
-    return validation::result{};
+    return validation::result{std::move(an)};
 };
 

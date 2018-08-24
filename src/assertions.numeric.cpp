@@ -22,41 +22,41 @@ namespace {
     const auto bounds_checker(f5::lstring name, const P p) {
         return [=](
             f5::u8view rule, f5::json::value part,
-            f5::json::value schema, f5::json::pointer spos,
-            f5::json::value data, f5::json::pointer dpos
+            f5::json::validation::annotations an
         ) -> f5::json::validation::result {
             if ( const auto max{part.get<int64_t>()}; max ) {
-                return data[dpos].apply_visitor(
-                    [&](int64_t v) {
-                        return p(max.value(), v) ? f5::json::validation::result{} : f5::json::validation::result{rule, spos, dpos};
+                return an.data[an.dpos].apply_visitor(
+                    [&](int64_t v) mutable {
+                        return p(max.value(), v) ? f5::json::validation::result{std::move(an)} : f5::json::validation::result{rule, an.spos, an.dpos};
                     },
-                    [&](double v) {
-                        return p(max.value(), v) ? f5::json::validation::result{} : f5::json::validation::result{rule, spos, dpos};
+                    [&](double v) mutable {
+                        return p(max.value(), v) ? f5::json::validation::result{std::move(an)} : f5::json::validation::result{rule, an.spos, an.dpos};
                     },
-                    [](const auto &) {
-                        return f5::json::validation::result{};
+                    [&](const auto &) mutable {
+                        return f5::json::validation::result{std::move(an)};
                     });
             } else if ( const auto max{part.get<double>()}; max ) {
-                return data[dpos].apply_visitor(
-                    [&](int64_t v) {
-                        return p(max.value(), v) ? f5::json::validation::result{} : f5::json::validation::result{rule, spos, dpos};
+                return an.data[an.dpos].apply_visitor(
+                    [&](int64_t v) mutable {
+                        return p(max.value(), v) ? f5::json::validation::result{std::move(an)} : f5::json::validation::result{rule, an.spos, an.dpos};
                     },
-                    [&](double v) {
+                    [&](double v) mutable {
                         bool passed;
                         if ( std::abs(max.value() - v) < epsilon ) {
                             passed = p(v, v);
                         } else {
                             passed = p(max.value(), v);
                         }
-                        return passed ? f5::json::validation::result{} : f5::json::validation::result{rule, spos, dpos};
+                        return passed ? f5::json::validation::result{std::move(an)} : f5::json::validation::result{rule, an.spos, an.dpos};
                     },
-                    [](const auto &) {
-                        return f5::json::validation::result{};
+                    [&](const auto &) mutable {
+                        return f5::json::validation::result{std::move(an)};
                     });
             } else {
-                throw fostlib::exceptions::not_implemented(__func__, name, part);
+                throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__,
+                    name, part);
             }
-            return f5::json::validation::result{};
+            return f5::json::validation::result{std::move(an)};
         };
     };
 }

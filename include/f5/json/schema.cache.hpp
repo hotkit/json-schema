@@ -22,6 +22,7 @@ namespace f5 {
 
 
         class schema_cache {
+            std::shared_ptr<schema_cache> base;
             std::map<fostlib::url, schema> cache;
 
         public:
