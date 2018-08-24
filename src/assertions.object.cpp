@@ -79,65 +79,62 @@ const f5::json::assertion::checker f5::json::assertion::additional_properties_ch
 };
 
 
-// const f5::json::assertion::checker f5::json::assertion::dependencies_checker = [](
-//     f5::u8view rule, f5::json::value part,
-//     f5::json::value schema, f5::json::pointer spos,
-//     f5::json::value data, f5::json::pointer dpos
-// ) {
-//     if ( part.isobject() ) {
-//         auto properties = data[dpos];
-//         if ( not properties.isobject() ) return validation::result{};
-//         for ( const auto &prop : properties.object() ) {
-//             if ( part.has_key(prop.first) ) {
-//                 if ( part[prop.first].isarray() ) {
-//                     for ( const auto name : part[prop.first] ) {
-//                         if ( not properties.has_key(fostlib::coerce<f5::u8view>(name)) ) {
-//                             return validation::result{rule, spos / rule / name, dpos};
-//                         }
-//                     }
-//                 } else {
-//                     const auto valid = validation::first_error(
-//                         schema, spos / rule / prop.first, data, dpos);
-//                     if ( not valid ) return valid;
-//                 }
-//             }
-//         }
-//     } else {
-//         throw fostlib::exceptions::not_implemented(__func__,
-//             "dependencies must be an object", part);
-//     }
-//     return validation::result{};
-// };
-//
-//
-// const f5::json::assertion::checker f5::json::assertion::max_properties_checker = [](
-//     f5::u8view rule, f5::json::value part,
-//     f5::json::value schema, f5::json::pointer spos,
-//     f5::json::value data, f5::json::pointer dpos
-// ) {
-//     auto properties = data[dpos];
-//     if ( not properties.isobject() ) return validation::result{};
-//     if ( properties.size() <= fostlib::coerce<int64_t>(part) ) {
-//         return validation::result{};
-//     } else {
-//         return validation::result(rule, spos, dpos);
-//     }
-// };
-//
-//
-// const f5::json::assertion::checker f5::json::assertion::min_properties_checker = [](
-//     f5::u8view rule, f5::json::value part,
-//     f5::json::value schema, f5::json::pointer spos,
-//     f5::json::value data, f5::json::pointer dpos
-// ) {
-//     auto properties = data[dpos];
-//     if ( not properties.isobject() ) return validation::result{};
-//     if ( properties.size() >= fostlib::coerce<int64_t>(part) ) {
-//         return validation::result{};
-//     } else {
-//         return validation::result(rule, spos, dpos);
-//     }
-// };
+const f5::json::assertion::checker f5::json::assertion::dependencies_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::validation::annotations an
+) {
+    if ( part.isobject() ) {
+        auto properties = an.data[an.dpos];
+        if ( not properties.isobject() ) return validation::result{std::move(an)};
+        for ( const auto &prop : properties.object() ) {
+            if ( part.has_key(prop.first) ) {
+                if ( part[prop.first].isarray() ) {
+                    for ( const auto name : part[prop.first] ) {
+                        if ( not properties.has_key(fostlib::coerce<f5::u8view>(name)) ) {
+                            return validation::result{rule, an.spos / rule / name, an.dpos};
+                        }
+                    }
+                } else {
+                    auto valid = validation::first_error(an, an.spos / rule / prop.first, an.dpos);
+                    if ( not valid ) return valid;
+                    an.merge(std::move(valid));
+                }
+            }
+        }
+    } else {
+        throw fostlib::exceptions::not_implemented(__func__,
+            "dependencies must be an object", part);
+    }
+    return validation::result{std::move(an)};
+};
+
+
+const f5::json::assertion::checker f5::json::assertion::max_properties_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::validation::annotations an
+) {
+    auto properties = an.data[an.dpos];
+    if ( not properties.isobject() ) return validation::result{std::move(an)};
+    if ( properties.size() <= fostlib::coerce<int64_t>(part) ) {
+        return validation::result{std::move(an)};
+    } else {
+        return validation::result(rule, an.spos / rule, an.dpos);
+    }
+};
+
+
+const f5::json::assertion::checker f5::json::assertion::min_properties_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::validation::annotations an
+) {
+    auto properties = an.data[an.dpos];
+    if ( not properties.isobject() ) return validation::result{std::move(an)};
+    if ( properties.size() >= fostlib::coerce<int64_t>(part) ) {
+        return validation::result{std::move(an)};
+    } else {
+        return validation::result(rule, an.spos / rule, an.dpos);
+    }
+};
 
 
 const f5::json::assertion::checker f5::json::assertion::pattern_properties_checker = [](
@@ -204,20 +201,20 @@ const f5::json::assertion::checker f5::json::assertion::properties_checker = [](
 };
 
 
-// const f5::json::assertion::checker f5::json::assertion::property_names_checker = [](
-//     f5::u8view rule, f5::json::value part,
-//     f5::json::value schema, f5::json::pointer spos,
-//     f5::json::value data, f5::json::pointer dpos
-// ) {
-//     auto properties = data[dpos];
-//     if ( not properties.isobject() ) return validation::result{};
-//     for ( const auto property : properties.object() ) {
-//         const auto valid = validation::first_error(
-//             schema, spos / rule, value(property.first), pointer{});
-//         if ( not valid ) return validation::result{rule, spos, dpos};
-//     }
-//     return validation::result{};
-// };
+const f5::json::assertion::checker f5::json::assertion::property_names_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::validation::annotations an
+) {
+    auto properties = an.data[an.dpos];
+    if ( not properties.isobject() ) return validation::result{std::move(an)};
+    for ( const auto property : properties.object() ) {
+        auto valid = validation::first_error(
+            an.schema, an.spos / rule, value(property.first), pointer{});
+        if ( not valid ) return validation::result{rule, an.spos / rule, an.dpos};
+        an.merge(std::move(valid));
+    }
+    return validation::result{std::move(an)};
+};
 
 
 const f5::json::assertion::checker f5::json::assertion::required_checker = [](
