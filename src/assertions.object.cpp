@@ -54,29 +54,31 @@ namespace {
 }
 
 
-// const f5::json::assertion::checker f5::json::assertion::additional_properties_checker = [](
-//     f5::u8view rule, f5::json::value part,
-//     f5::json::value schema, f5::json::pointer spos,
-//     f5::json::value data, f5::json::pointer dpos
-// ) {
-//     if ( schema[spos].has_key("properties") || schema[spos].has_key("patternProperties") ) {
-//         /// The schema has at least one of the above, so the processing
-//         /// of this assertion must happen after and as part of the
-//         /// processing of those.
-//         return validation::result{};
-//     } else {
-//         auto properties = data[dpos];
-//         if ( not properties.isobject() ) return validation::result{};
-//         for ( const auto &property : properties.object() ) {
-//             const auto valid = validation::first_error(
-//                 schema, spos / rule, data, dpos / property.first);
-//             if ( not valid ) return valid;
-//         }
-//         return validation::result{};
-//     }
-// };
-//
-//
+const f5::json::assertion::checker f5::json::assertion::additional_properties_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::validation::annotations an
+) {
+    if ( an.schema[an.spos].has_key("properties") ||
+        an.schema[an.spos].has_key("patternProperties") )
+    {
+        /// The schema has at least one of the above, so the processing
+        /// of this assertion must happen after and as part of the
+        /// processing of those.
+        return validation::result{std::move(an)};
+    } else {
+        auto properties = an.data[an.dpos];
+        if ( not properties.isobject() ) return validation::result{std::move(an)};
+        for ( const auto &property : properties.object() ) {
+            auto valid = validation::first_error(an,
+                an.spos / rule, an.dpos / property.first);
+            if ( not valid ) return valid;
+            an.merge(std::move(valid));
+        }
+        return validation::result{std::move(an)};
+    }
+};
+
+
 // const f5::json::assertion::checker f5::json::assertion::dependencies_checker = [](
 //     f5::u8view rule, f5::json::value part,
 //     f5::json::value schema, f5::json::pointer spos,
@@ -136,32 +138,34 @@ namespace {
 //         return validation::result(rule, spos, dpos);
 //     }
 // };
-//
-//
-// const f5::json::assertion::checker f5::json::assertion::pattern_properties_checker = [](
-//     f5::u8view rule, f5::json::value part,
-//     f5::json::value schema, f5::json::pointer spos,
-//     f5::json::value data, f5::json::pointer dpos
-// ) {
-//     if ( schema[spos].has_key("properties") ) {
-//         / The schema has a `properties` assertion, in which case this
-//         / assertion will run after that as part of the properies checks.
-//         return validation::result{};
-//     } else if ( schema[spos].isobject() ) {
-//         auto properties = data[dpos];
-//         if ( not properties.isobject() ) return validation::result{};
-//         auto remaining{property_names(properties)};
-//         const auto valid = pattern_properties(remaining, schema, spos, data, dpos);
-//         if ( not valid ) return valid;
-//
-//         if ( schema[spos].has_key("additionalProperties") ) {
-//             return additional_properties(remaining, schema, spos, data, dpos);
-//         }
-//     } else {
-//         throw fostlib::exceptions::not_implemented(__func__, "pattern_properties_checker -- not object", part);
-//     }
-//     return validation::result{};
-// };
+
+
+const f5::json::assertion::checker f5::json::assertion::pattern_properties_checker = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::validation::annotations an
+) {
+    if ( an.schema[an.spos].has_key("properties") ) {
+        /// The schema has a `properties` assertion, in which case this
+        /// assertion will run after that as part of the properties checks.
+        return validation::result{std::move(an)};
+    } else if ( an.schema[an.spos].isobject() ) {
+        auto properties = an.data[an.dpos];
+        if ( not properties.isobject() ) return validation::result{std::move(an)};
+        auto remaining{property_names(properties)};
+        auto valid = pattern_properties(remaining, an);
+        if ( not valid ) return valid;
+        an.merge(std::move(valid));
+
+        if ( an.schema[an.spos].has_key("additionalProperties") ) {
+            auto valid = additional_properties(remaining, an);
+            if ( not valid ) return valid;
+            an.merge(std::move(valid));
+        }
+    } else {
+        throw fostlib::exceptions::not_implemented(__func__, "pattern_properties_checker -- not object", part);
+    }
+    return validation::result{std::move(an)};
+};
 
 
 const f5::json::assertion::checker f5::json::assertion::properties_checker = [](

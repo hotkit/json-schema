@@ -40,17 +40,16 @@ const f5::json::assertion::checker f5::json::assertion::all_of_checker = [](
 //     }
 //     return validation::result{rule, spos, dpos};
 // };
-//
-//
-// const f5::json::assertion::checker f5::json::assertion::always = [](
-//     f5::u8view rule, f5::json::value part,
-//     f5::json::value schema, f5::json::pointer spos,
-//     f5::json::value data, f5::json::pointer dpos
-// ) {
-//     return validation::result{};
-// };
-//
-//
+
+
+const f5::json::assertion::checker f5::json::assertion::always = [](
+    f5::u8view rule, f5::json::value part,
+    f5::json::validation::annotations an
+) {
+    return validation::result{std::move(an)};
+};
+
+
 // const f5::json::assertion::checker f5::json::assertion::const_checker = [](
 //     f5::u8view rule, f5::json::value part,
 //     f5::json::value schema, f5::json::pointer spos,
