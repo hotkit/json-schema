@@ -39,7 +39,7 @@ namespace {
             a["multipleOf"] = f5::json::assertion::multiple_of_checker;
             a["not"] = f5::json::assertion::not_checker;
             a["oneOf"] = f5::json::assertion::one_of_checker;
-//             a["pattern"] = f5::json::assertion::pattern_checker;
+            a["pattern"] = f5::json::assertion::pattern_checker;
             a["patternProperties"] = f5::json::assertion::pattern_properties_checker;
             a["properties"] = f5::json::assertion::properties_checker;
 //             a["propertyNames"] = f5::json::assertion::property_names_checker;
