@@ -21,13 +21,13 @@ namespace {
             a["allOf"] = f5::json::assertion::all_of_checker;
             a["anyOf"] = f5::json::assertion::any_of_checker;
             a["const"] = f5::json::assertion::const_checker;
-//             a["contains"] = f5::json::assertion::contains_checker;
+            a["contains"] = f5::json::assertion::contains_checker;
             a["dependencies"] = f5::json::assertion::dependencies_checker;
             a["enum"] = f5::json::assertion::enum_checker;
             a["exclusiveMaximum"] = f5::json::assertion::exclusive_maximum_checker;
             a["exclusiveMinimum"] = f5::json::assertion::exclusive_minimum_checker;
             a["if"] = f5::json::assertion::if_checker;
-//             a["items"] = f5::json::assertion::items_checker;
+            a["items"] = f5::json::assertion::items_checker;
             a["maximum"] = f5::json::assertion::maximum_checker;
             a["maxItems"] = f5::json::assertion::max_items_checker;
             a["maxLength"] = f5::json::assertion::max_length_checker;
@@ -45,7 +45,7 @@ namespace {
             a["propertyNames"] = f5::json::assertion::property_names_checker;
             a["required"] = f5::json::assertion::required_checker;
             a["type"] = f5::json::assertion::type_checker;
-//             a["uniqueItems"] = f5::json::assertion::unique_items_checker;
+            a["uniqueItems"] = f5::json::assertion::unique_items_checker;
             return a;
         }();
 
