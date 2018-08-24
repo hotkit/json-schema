@@ -21,10 +21,7 @@ namespace f5 {
 
 
             using checker = std::function<
-                validation::result(
-                    u8view rule, value part,
-                    value schema, pointer spos,
-                    value data, pointer dpos)>;
+                validation::result(u8view rule, value part, validation::annotations)>;
 
 
             extern const checker

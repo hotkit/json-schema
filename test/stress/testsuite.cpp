@@ -48,7 +48,7 @@ FSL_MAIN(
                 for ( const auto example : test["tests"] ) {
                     ss << description << ':'
                         << fostlib::coerce<f5::u8view>(example["description"]) << ':';
-                    const auto result = s.validate(example["data"]);
+                    auto result = s.validate(example["data"]);
                     const bool valid{result};
                     if ( example["valid"] == fostlib::json(valid) ) {
                         ss << " Passed\n";
@@ -56,7 +56,8 @@ FSL_MAIN(
                         ++failed;
                         ss << " FAILED\n";
                         if ( not result ) {
-                            ss << "  " << result.outcome.value().assertion
+                            auto e{(f5::json::validation::result::error)std::move(result)};
+                            ss << "  " << e.assertion
                                 << "\n";
                         }
                     }

@@ -57,9 +57,9 @@ FSL_MAIN(
                 return 2;
             }
         } else {
-            if ( const auto v = s.validate(j); not v ) {
+            if ( auto v = s.validate(j); not v ) {
                 std::cout << arg << " did not validate" << std::endl;
-                print(s, j, v.outcome.value());
+                print(s, j, (f5::json::validation::result::error)std::move(v));
                 return 1;
             }
         }
