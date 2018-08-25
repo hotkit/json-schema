@@ -35,16 +35,17 @@ FSL_MAIN(
     fostlib::stringstream buffer;
     fostlib::ostream &ss = c_verbose.value() ? out : buffer;
     int failed{};
-    const auto base{c_base.value()};
+    const fostlib::url base{c_base.value()};
     fostlib::http::user_agent ua;
 
     try {
         for ( const auto &arg : args ) {
-            const auto response = ua.get(fostlib::url{base + arg});
+            const fostlib::url loc{base, arg};
+            const auto response = ua.get(loc);
             const auto tests = fostlib::json::parse(response->body()->data());
             for ( const auto test : tests ) {
                 const auto description = fostlib::coerce<f5::u8view>(test["description"]);
-                const f5::json::schema s{test["schema"]};
+                const f5::json::schema s{loc, test["schema"]};
                 for ( const auto example : test["tests"] ) {
                     ss << description << ':'
                         << fostlib::coerce<f5::u8view>(example["description"]) << ':';

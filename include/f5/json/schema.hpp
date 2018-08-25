@@ -9,6 +9,7 @@
 #pragma once
 
 #include <f5/json/validator.hpp>
+#include <fost/url>
 
 
 namespace f5 {
@@ -24,13 +25,15 @@ namespace f5 {
             instances.
             */
         class schema {
+            fostlib::url id;
             value validation;
 
         public:
-            schema(value v)
-            : validation(std::move(v)) {
-            }
+            schema(const fostlib::url &, value v);
 
+            const fostlib::url &self() const {
+                return id;
+            }
             value assertions() const {
                 return validation;
             }

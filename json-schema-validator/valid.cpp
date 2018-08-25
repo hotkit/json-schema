@@ -44,7 +44,7 @@ FSL_MAIN(
     args.commandSwitch("v", c_verbose);
     args.commandSwitch("-schema", c_schema);
 
-    const f5::json::schema s{load_json(c_schema.value())};
+    const f5::json::schema s{fostlib::url{}, load_json(c_schema.value())};
 
     for ( const auto &arg : args ) {
         if ( c_verbose.value() ) {

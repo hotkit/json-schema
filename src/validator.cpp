@@ -58,14 +58,16 @@ namespace {
  */
 
 
-f5::json::validation::annotations::annotations(value s, pointer sp, value d, pointer dp)
-: schema(std::move(s)), spos(std::move(sp)),
+f5::json::validation::annotations::annotations(
+    const json::schema &s, pointer sp, value d, pointer dp
+) : base(s),
+    schema(s.assertions()), spos(std::move(sp)),
     data(std::move(d)), dpos(std::move(dp)),
     schemas{[this]() {
         auto cache = std::make_shared<schema_cache>();
         if ( schema[spos].has_key("definitions") ) {
             for ( const auto &def : schema[spos]["definitions"].object() ) {
-                cache->insert(def.first, json::schema{def.second});
+                cache->insert(def.first, json::schema{base.self(), def.second});
             }
         }
         return cache;
@@ -75,15 +77,18 @@ f5::json::validation::annotations::annotations(value s, pointer sp, value d, poi
 
 
 f5::json::validation::annotations::annotations(annotations &an, pointer sp, pointer dp)
-: schema(an.schema), spos(std::move(sp)),
+: base{an.base},
+    schema(an.schema), spos(std::move(sp)),
     data(an.data), dpos(std::move(dp)),
     schemas(an.schemas)
 {
 }
 
 f5::json::validation::annotations::annotations(annotations &&b, result &&w)
-: schema{std::move(b.schema)}, spos{std::move(b.spos)},
-    data{std::move(b.data)}, dpos{std::move(b.dpos)}
+: base{b.base},
+    schema{std::move(b.schema)}, spos{std::move(b.spos)},
+    data{std::move(b.data)}, dpos{std::move(b.dpos)},
+    schemas{b.schemas}
 {
     merge(std::move(w));
 }
@@ -159,7 +164,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
                     } else {
                         const f5::u8view u{ref.begin(), frag};
                         const auto &ref_schema = (*cache)[u];
-                        auto valid = first_error(ref_schema.assertions(),
+                        auto valid = first_error(ref_schema,
                             fostlib::jcursor::parse_json_pointer_fragment(
                                 f5::u8view{frag, ref.end()}),
                             an.data, an.dpos);
@@ -172,7 +177,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
                     const auto apos = g_assertions.find(rule.first);
                     if ( apos != g_assertions.end() ) {
                         auto v = apos->second(apos->first, rule.second,
-                            annotations{an.schema, an.spos, an.data, an.dpos});
+                            annotations{an.base, an.spos, an.data, an.dpos});
                         if ( not v ) return v;
                         an.merge(std::move(v));
                     }

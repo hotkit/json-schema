@@ -9,7 +9,20 @@
 #include <fost/unicode>
 
 
+f5::json::schema::schema(const fostlib::url &b, value v)
+: id{b, [v](){
+        if ( v.has_key("$id") ) {
+            return fostlib::coerce<fostlib::string>(v["$id"]);
+        } else {
+            return fostlib::guid();
+        }
+    }()},
+    validation{v}
+{
+}
+
+
 auto f5::json::schema::validate(value j) const -> validation::result {
-    return validation::first_error(validation, pointer{}, j, pointer{});
+    return validation::first_error(*this, pointer{}, j, pointer{});
 }
 

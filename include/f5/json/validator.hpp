@@ -21,6 +21,7 @@ namespace f5 {
         using pointer = fostlib::jcursor;
 
 
+        class schema;
         class schema_cache;
 
 
@@ -41,6 +42,7 @@ namespace f5 {
              * themselves.
              */
             struct annotations {
+                const schema &base;
                 value schema;
                 pointer spos;
                 value data;
@@ -49,7 +51,7 @@ namespace f5 {
                 std::shared_ptr<schema_cache> schemas;
 
                 /// Construct the initial location
-                annotations(value s, pointer sp, value d, pointer dp);
+                annotations(const json::schema &s, pointer sp, value d, pointer dp);
                 /// Construct an annotations for another part of the validation
                 annotations(annotations &, pointer sp, pointer dp);
 
@@ -104,9 +106,8 @@ namespace f5 {
             /// Validate part of an object against part of a schema. Typically
             /// you will want to call the `validate` member on a schema instance
             /// to perform validation.
-            inline result first_error(value s, pointer sp, value d, pointer dp) {
-                return first_error(annotations{
-                    std::move(s), std::move(sp), std::move(d), std::move(dp)});
+            inline result first_error(const schema &s, pointer sp, value d, pointer dp) {
+                return first_error(annotations{s, std::move(sp), std::move(d), std::move(dp)});
             }
             /// Recurse down into another level of the validation
             inline result first_error(annotations &an, pointer spos, pointer dpos) {
