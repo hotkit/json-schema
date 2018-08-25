@@ -104,8 +104,7 @@ namespace f5 {
             /// Validate part of an object against part of a schema. Typically
             /// you will want to call the `validate` member on a schema instance
             /// to perform validation.
-            inline result first_error(value s, pointer sp, value d, pointer dp)
-{
+            inline result first_error(value s, pointer sp, value d, pointer dp) {
                 return first_error(annotations{
                     std::move(s), std::move(sp), std::move(d), std::move(dp)});
             }

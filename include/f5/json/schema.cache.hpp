@@ -22,16 +22,30 @@ namespace f5 {
 
 
         class schema_cache {
+            friend validation::annotations;
+
             std::shared_ptr<schema_cache> base;
-            std::map<fostlib::url, schema> cache;
+            std::map<fostlib::string, schema> cache;
 
         public:
-            schema_cache() {
-            }
+            /// Create an empty cache which uses the root cache
+            /// as its base
+            schema_cache();
+            /// Create a cache which is built on top of another cache
+            schema_cache(std::shared_ptr<schema_cache>);
 
-            const schema &operator [] (const fostlib::url &) const;
+            /// Perform a lookup in this case and its bases
+            const schema &operator [] (f5::u8view) const;
 
+            /// The root cache. The root cache is the only cache which
+            /// should have an empty base.
             static std::shared_ptr<schema_cache> root_cache();
+
+            /// Add a schema at a given position in the cache
+            schema_cache &insert(fostlib::string, schema);
+            /// Add a schema at an unnamed position, i.e. only if it
+            /// contains a `$id` describing its proper location
+            schema_cache &insert(schema);
         };
 
 

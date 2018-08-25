@@ -59,12 +59,26 @@ namespace {
 
 
 f5::json::validation::annotations::annotations(value s, pointer sp, value d, pointer dp)
-: schema(s), spos(std::move(sp)), data(d), dpos(std::move(dp)) {
+: schema(std::move(s)), spos(std::move(sp)),
+    data(std::move(d)), dpos(std::move(dp)),
+    schemas{[this]() {
+        auto cache = std::make_shared<schema_cache>();
+        if ( schema[spos].has_key("definitions") ) {
+            for ( const auto &def : schema[spos]["definitions"].object() ) {
+                cache->insert(def.first, json::schema{def.second});
+            }
+        }
+        return cache;
+    }()}
+{
 }
 
 
 f5::json::validation::annotations::annotations(annotations &an, pointer sp, pointer dp)
-: schema(an.schema), spos(std::move(sp)), data(an.data), dpos(std::move(dp)) {
+: schema(an.schema), spos(std::move(sp)),
+    data(an.data), dpos(std::move(dp)),
+    schemas(an.schemas)
+{
 }
 
 f5::json::validation::annotations::annotations(annotations &&b, result &&w)
@@ -139,11 +153,11 @@ auto f5::json::validation::first_error(annotations an) -> result {
                 } else {
                     const auto cache = schema_cache::root_cache();
                     if ( const auto frag = std::find(ref.begin(), ref.end(), '#'); frag == ref.end() ) {
-                        const auto &ref_schema = (*cache)[fostlib::url{ref}];
+                        const auto &ref_schema = (*cache)[ref];
                         throw fostlib::exceptions::not_implemented(__func__,
                             "URL based schema lookups WITHOUT fragment", ref);
                     } else {
-                        const fostlib::url u{f5::u8view{ref.begin(), frag}};
+                        const f5::u8view u{ref.begin(), frag};
                         const auto &ref_schema = (*cache)[u];
                         auto valid = first_error(ref_schema.assertions(),
                             fostlib::jcursor::parse_json_pointer_fragment(
