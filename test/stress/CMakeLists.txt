@@ -15,7 +15,8 @@ add_dependencies(stress json-schema-testsuite)
 
 function(draftv7 name)
     add_custom_command(TARGET json-schema-testsuite
-            COMMAND json-schema-testsuite -b false -p ${CMAKE_CURRENT_SOURCE_DIR}/../checks/json-schema.schema.json
+            COMMAND json-schema-testsuite -b false
+                "-p" ${CMAKE_CURRENT_SOURCE_DIR}/../checks/json-schema.schema.json
                 ${name}.json)
 endfunction()
 
@@ -27,7 +28,7 @@ draftv7(boolean_schema)
 draftv7(const)
 draftv7(contains)
 draftv7(default)
-# # draftv7(definitions)
+# draftv7(definitions)
 draftv7(dependencies)
 draftv7(enum)
 draftv7(exclusiveMaximum)
@@ -49,8 +50,8 @@ draftv7(pattern)
 draftv7(patternProperties)
 draftv7(properties)
 draftv7(propertyNames)
-# draftv7(ref)
-# # draftv7(refRemote)
+draftv7(ref)
+# draftv7(refRemote)
 draftv7(required)
 draftv7(type)
 draftv7(uniqueItems)

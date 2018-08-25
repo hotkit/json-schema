@@ -50,8 +50,15 @@ namespace f5 {
 
                 std::shared_ptr<schema_cache> schemas;
 
+            private:
+                friend class json::schema;
                 /// Construct the initial location
                 annotations(const json::schema &s, pointer sp, value d, pointer dp);
+
+            public:
+                /// Construct a later annotation, but allow more replacements
+                annotations(annotations &a,
+                    const json::schema &s, pointer sp, value d, pointer dp);
                 /// Construct an annotations for another part of the validation
                 annotations(annotations &, pointer sp, pointer dp);
 
@@ -103,12 +110,6 @@ namespace f5 {
 
             /// Perform the check
             result first_error(annotations);
-            /// Validate part of an object against part of a schema. Typically
-            /// you will want to call the `validate` member on a schema instance
-            /// to perform validation.
-            inline result first_error(const schema &s, pointer sp, value d, pointer dp) {
-                return first_error(annotations{s, std::move(sp), std::move(d), std::move(dp)});
-            }
             /// Recurse down into another level of the validation
             inline result first_error(annotations &an, pointer spos, pointer dpos) {
                 return first_error(annotations{an, std::move(spos), std::move(dpos)});

@@ -23,6 +23,7 @@ f5::json::schema::schema(const fostlib::url &b, value v)
 
 
 auto f5::json::schema::validate(value j) const -> validation::result {
-    return validation::first_error(*this, pointer{}, j, pointer{});
+    return validation::first_error(
+        validation::annotations{*this, pointer{}, j, pointer{}});
 }
 

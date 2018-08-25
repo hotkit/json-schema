@@ -6,6 +6,7 @@
 */
 
 #include <f5/json/schema.cache.hpp>
+#include <fost/insert>
 #include <fost/push_back>
 
 
@@ -55,8 +56,10 @@ auto f5::json::schema_cache::operator [] (f5::u8view u) const -> const schema & 
             return pos->second;
         }
     } catch ( fostlib::exceptions::exception &e ) {
+        const fostlib::string cp{std::to_string((int64_t)this)};
+        fostlib::insert(e.data(), "schema-cache", cp, value::array_t{});
         for ( const auto &c : cache ) {
-            fostlib::push_back(e.data(), "schema-cache", c.first);
+            fostlib::push_back(e.data(), "schema-cache", cp, c.first);
         }
         throw;
     }
@@ -67,8 +70,11 @@ auto f5::json::schema_cache::insert(schema s) -> schema_cache & {
     if ( s.assertions().has_key("$id") ) {
         auto parts = fostlib::partition(
             fostlib::coerce<fostlib::string>(s.assertions()["$id"]), "#");
-        cache.insert(std::make_pair(std::move(parts.first), std::move(s)));
+        cache.insert(std::make_pair(std::move(parts.first), s));
     }
+    cache.insert(std::make_pair(
+        fostlib::coerce<fostlib::string>(s.self()),
+        std::move(s)));
     return *this;
 }
 
