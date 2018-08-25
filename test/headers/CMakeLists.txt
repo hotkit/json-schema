@@ -1,6 +1,7 @@
 add_library(json-schema-headers-tests STATIC EXCLUDE_FROM_ALL
         assertions.cpp
         schema.cpp
+        schema.cache.cpp
         validator.cpp
     )
 target_link_libraries(json-schema-headers-tests f5-json-schema)
