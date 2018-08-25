@@ -6,6 +6,7 @@
 */
 
 #include <f5/json/schema.cache.hpp>
+#include <fost/push_back>
 
 
 const fostlib::setting<f5::json::value> f5::json::c_schema_path(__FILE__,
@@ -41,16 +42,23 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
 
 
 auto f5::json::schema_cache::operator [] (f5::u8view u) const -> const schema & {
-    const auto pos = cache.find(u);
-    if ( pos == cache.end() ) {
-        if ( base ) {
-            return (*base)[u];
+    try {
+        const auto pos = cache.find(u);
+        if ( pos == cache.end() ) {
+            if ( base ) {
+                return (*base)[u];
+            } else {
+                throw fostlib::exceptions::not_implemented(
+                    __PRETTY_FUNCTION__, "Schema not found", u);
+            }
         } else {
-            throw fostlib::exceptions::not_implemented(
-                __PRETTY_FUNCTION__, "Schema not found", u);
+            return pos->second;
         }
-    } else {
-        return pos->second;
+    } catch ( fostlib::exceptions::exception &e ) {
+        for ( const auto &c : cache ) {
+            fostlib::push_back(e.data(), "schema-cache", c.first);
+        }
+        throw;
     }
 }
 
