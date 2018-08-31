@@ -6,6 +6,7 @@ add_library(f5-json-schema
         assertions.string.cpp
         schema.cpp
         schema.cache.cpp
+        schema.loaders.cpp
         validator.cpp
     )
 target_include_directories(f5-json-schema PUBLIC ../include)

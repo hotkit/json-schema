@@ -58,41 +58,58 @@ namespace {
  */
 
 
-f5::json::validation::annotations::annotations(
-    const json::schema &s, pointer sp, value d, pointer dp
-) : base(s),
-    schema(s.assertions()), spos(std::move(sp)),
-    data(std::move(d)), dpos(std::move(dp)),
-    schemas{[this, &s]() {
-        auto cache = std::make_shared<schema_cache>();
-        cache->insert(fostlib::string{s.self().as_string()}, s);
-        if ( schema[spos].has_key("definitions") ) {
-            for ( const auto &def : schema[spos]["definitions"].object() ) {
-                cache->insert(def.first, json::schema{base.self(), def.second});
+namespace {
+    void id_handling(
+        f5::json::validation::annotations *anp,
+        std::shared_ptr<f5::json::schema_cache> schemas
+    ) {
+        if ( anp->schema[anp->spos].has_key("$id") ) {
+            if ( not schemas ) {
+                schemas = std::make_shared<f5::json::schema_cache>(anp->schemas);
+                anp->schemas = schemas;
+            }
+            anp->base = &schemas->insert(f5::json::schema{
+                anp->base->self(), anp->schema[anp->spos]});
+        }
+    }
+    void definitions(
+        f5::json::validation::annotations *anp,
+        const fostlib::url &base,
+        f5::json::pointer sub
+    ) {
+        if ( anp->schema[anp->spos][sub].has_key("definitions") ) {
+            for ( const auto &def : anp->schema[anp->spos][sub]["definitions"].object() ) {
+                fostlib::url r{anp->base->self(), anp->spos / sub};
+                const auto &subschema = anp->schemas->insert(
+                    fostlib::string(r.as_string()), f5::json::schema{base, def.second});
+                definitions(anp, subschema.self(), sub / "definitions" / def.first);
             }
         }
-        return cache;
-    }()}
+    }
+}
+
+
+f5::json::validation::annotations::annotations(
+    const json::schema &s, pointer sp, value d, pointer dp
+) : base(&s),
+    schema(s.assertions()), spos(std::move(sp)),
+    data(std::move(d)), dpos(std::move(dp)),
+    schemas{std::make_shared<schema_cache>()}
 {
+    id_handling(this, schemas);
+    definitions(this, base->self(), pointer{});
 }
 
 
 f5::json::validation::annotations::annotations(
     annotations &an, const json::schema &s, pointer sp, value d, pointer dp
-) : base(s),
+) : base(&s),
     schema(s.assertions()), spos(std::move(sp)),
     data(std::move(d)), dpos(std::move(dp)),
-    schemas{[this, &an, &s]() {
-        auto cache = std::make_shared<schema_cache>(an.schemas);
-        cache->insert(fostlib::string{s.self().as_string()}, s);
-        if ( schema[spos].has_key("definitions") ) {
-            for ( const auto &def : schema[spos]["definitions"].object() ) {
-                cache->insert(def.first, json::schema{base.self(), def.second});
-            }
-        }
-        return cache;
-    }()}
+    schemas{std::make_shared<schema_cache>(an.schemas)}
 {
+    id_handling(this, schemas);
+    definitions(this, base->self(), pointer{});
 }
 
 
@@ -102,6 +119,7 @@ f5::json::validation::annotations::annotations(annotations &an, pointer sp, poin
     data(an.data), dpos(std::move(dp)),
     schemas(an.schemas)
 {
+    id_handling(this, nullptr);
 }
 
 
@@ -111,6 +129,7 @@ f5::json::validation::annotations::annotations(annotations &&b, result &&w)
     data{std::move(b.data)}, dpos{std::move(b.dpos)},
     schemas{b.schemas}
 {
+    id_handling(this, nullptr);
     merge(std::move(w));
 }
 
@@ -179,7 +198,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
                 } else {
                     const auto &cache = *an.schemas;
                     if ( const auto frag = std::find(ref.begin(), ref.end(), '#'); frag == ref.end() ) {
-                        const fostlib::url u{an.base.self(), ref};
+                        const fostlib::url u{an.base->self(), ref};
                         const auto &ref_schema = cache[u.as_string()];
                         auto valid = first_error(
                             annotations{an, ref_schema, pointer{}, an.data, an.dpos});
@@ -187,7 +206,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
                         return annotations{std::move(an), std::move(valid)};
                     } else {
                         const f5::u8view us{ref.begin(), frag};
-                        const fostlib::url u{an.base.self(), us};
+                        const fostlib::url u{an.base->self(), us};
                         const auto &ref_schema = cache[u.as_string()];
                         auto valid = first_error(
                             annotations{an, ref_schema,
@@ -215,7 +234,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
         return result{std::move(an)};
     } catch ( fostlib::exceptions::exception &e ) {
         fostlib::json::object_t proc;
-        proc["base"] = fostlib::coerce<fostlib::json>(an.base.self());
+        proc["base"] = fostlib::coerce<fostlib::json>(an.base->self());
         proc["spos"] = fostlib::coerce<fostlib::json>(an.spos);
         proc["dpos"] = fostlib::coerce<fostlib::json>(an.dpos);
         fostlib::push_back(e.data(), "first_error stack", proc);

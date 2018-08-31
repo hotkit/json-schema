@@ -41,10 +41,10 @@ namespace f5 {
             static std::shared_ptr<schema_cache> root_cache();
 
             /// Add a schema at a given position in the cache
-            schema_cache &insert(fostlib::string, schema);
+            const schema &insert(fostlib::string, schema);
             /// Add a schema at an unnamed position, i.e. only if it
             /// contains a `$id` describing its proper location
-            schema_cache &insert(schema);
+            const schema &insert(schema);
         };
 
 

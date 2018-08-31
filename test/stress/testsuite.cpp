@@ -6,6 +6,7 @@
 */
 
 #include <f5/json/schema.cache.hpp>
+#include <f5/json/schema.loaders.hpp>
 
 #include <fost/file>
 #include <fost/http>
@@ -22,6 +23,22 @@ namespace {
         "https://raw.githubusercontent.com/"
             "json-schema-org/JSON-Schema-Test-Suite/"
             "master/tests/draft7/", true);
+
+    const fostlib::setting<fostlib::json> c_loaders{__FILE__,
+        f5::json::c_schema_loaders, []() {
+            f5::json::value::array_t loaders;
+            loaders.push_back([](){
+                f5::json::value::object_t github;
+                github["loader"] = "http";
+                github["prefix"] = "http://localhost:1234/";
+                github["base"] = "https://raw.githubusercontent.com/"
+                    "json-schema-org/JSON-Schema-Test-Suite/master/remotes/";
+                return github;
+            }());
+            return loaders;
+        }()};
+
+
 }
 
 

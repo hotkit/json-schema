@@ -1,3 +1,6 @@
+2018-08-31  Kirit Saelensminde  <kirit@felspar.com>
+ Added an API that can be used to register schema loaders.
+
 2018-08-24  Kirit Saelensminde  <kirit@felspar.com>
  Refactor the assertion functions so that they will be easier to extend in future.
 

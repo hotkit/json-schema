@@ -42,7 +42,7 @@ namespace f5 {
              * themselves.
              */
             struct annotations {
-                const schema &base;
+                const schema *base;
                 value schema;
                 pointer spos;
                 value data;
