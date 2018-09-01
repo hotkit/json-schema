@@ -63,13 +63,13 @@ namespace {
         f5::json::validation::annotations *anp,
         std::shared_ptr<f5::json::schema_cache> schemas
     ) {
-        if ( anp->schema[anp->spos].has_key("$id") ) {
+        if ( anp->sroot[anp->spos].has_key("$id") ) {
             if ( not schemas ) {
                 schemas = std::make_shared<f5::json::schema_cache>(anp->schemas);
                 anp->schemas = schemas;
             }
             anp->base = &schemas->insert(f5::json::schema{
-                anp->base->self(), anp->schema[anp->spos]});
+                anp->base->self(), anp->sroot[anp->spos]});
         }
     }
     void definitions(
@@ -77,8 +77,8 @@ namespace {
         const fostlib::url &base,
         f5::json::pointer sub
     ) {
-        if ( anp->schema[anp->spos][sub].has_key("definitions") ) {
-            for ( const auto &def : anp->schema[anp->spos][sub]["definitions"].object() ) {
+        if ( anp->sroot[anp->spos][sub].has_key("definitions") ) {
+            for ( const auto &def : anp->sroot[anp->spos][sub]["definitions"].object() ) {
                 fostlib::url r{anp->base->self(), anp->spos / sub};
                 const auto &subschema = anp->schemas->insert(
                     fostlib::string(r.as_string()), f5::json::schema{base, def.second});
@@ -92,7 +92,7 @@ namespace {
 f5::json::validation::annotations::annotations(
     const json::schema &s, pointer sp, value d, pointer dp
 ) : base(&s),
-    schema(s.assertions()), spos(std::move(sp)),
+    sroot(s.assertions()), spos(std::move(sp)),
     data(std::move(d)), dpos(std::move(dp)),
     schemas{std::make_shared<schema_cache>()}
 {
@@ -104,7 +104,7 @@ f5::json::validation::annotations::annotations(
 f5::json::validation::annotations::annotations(
     annotations &an, const json::schema &s, pointer sp, value d, pointer dp
 ) : base(&s),
-    schema(s.assertions()), spos(std::move(sp)),
+    sroot(s.assertions()), spos(std::move(sp)),
     data(std::move(d)), dpos(std::move(dp)),
     schemas{std::make_shared<schema_cache>(an.schemas)}
 {
@@ -115,7 +115,7 @@ f5::json::validation::annotations::annotations(
 
 f5::json::validation::annotations::annotations(annotations &an, pointer sp, pointer dp)
 : base{an.base},
-    schema(an.schema), spos(std::move(sp)),
+    sroot(an.sroot), spos(std::move(sp)),
     data(an.data), dpos(std::move(dp)),
     schemas(an.schemas)
 {
@@ -125,7 +125,7 @@ f5::json::validation::annotations::annotations(annotations &an, pointer sp, poin
 
 f5::json::validation::annotations::annotations(annotations &&b, result &&w)
 : base{b.base},
-    schema{std::move(b.schema)}, spos{std::move(b.spos)},
+    sroot{std::move(b.sroot)}, spos{std::move(b.spos)},
     data{std::move(b.data)}, dpos{std::move(b.dpos)},
     schemas{b.schemas}
 {
@@ -181,11 +181,11 @@ f5::json::validation::result::operator error () && {
 
 auto f5::json::validation::first_error(annotations an) -> result {
     try {
-        if ( an.schema[an.spos] == fostlib::json(true) ) {
+        if ( an.sroot[an.spos] == fostlib::json(true) ) {
             return result{std::move(an)};
-        } else if ( an.schema[an.spos] == fostlib::json(false) ) {
+        } else if ( an.sroot[an.spos] == fostlib::json(false) ) {
             return result{"false", std::move(an.spos), std::move(an.dpos)};
-        } else if ( auto part = an.schema[an.spos]; part.isobject() ) {
+        } else if ( auto part = an.sroot[an.spos]; part.isobject() ) {
             if ( part.has_key("$ref") ) {
                 const auto ref = fostlib::coerce<f5::u8view>(part["$ref"]);
                 if ( ref.bytes() && *ref.begin() == '#' ) {

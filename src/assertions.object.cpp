@@ -22,7 +22,7 @@ namespace {
        std::set<fostlib::string> &remaining,
         f5::json::validation::annotations an
     ) {
-        const auto patterns = an.schema[an.spos]["patternProperties"];
+        const auto patterns = an.sroot[an.spos]["patternProperties"];
         auto properties = an.data[an.dpos];
         for ( const auto &pattern : patterns.object() ) {
             std::regex re{pattern.first.std_str()};
@@ -58,8 +58,8 @@ const f5::json::assertion::checker f5::json::assertion::additional_properties_ch
     f5::u8view rule, f5::json::value part,
     f5::json::validation::annotations an
 ) {
-    if ( an.schema[an.spos].has_key("properties") ||
-        an.schema[an.spos].has_key("patternProperties") )
+    if ( an.sroot[an.spos].has_key("properties") ||
+        an.sroot[an.spos].has_key("patternProperties") )
     {
         /// The schema has at least one of the above, so the processing
         /// of this assertion must happen after and as part of the
@@ -141,11 +141,11 @@ const f5::json::assertion::checker f5::json::assertion::pattern_properties_check
     f5::u8view rule, f5::json::value part,
     f5::json::validation::annotations an
 ) {
-    if ( an.schema[an.spos].has_key("properties") ) {
+    if ( an.sroot[an.spos].has_key("properties") ) {
         /// The schema has a `properties` assertion, in which case this
         /// assertion will run after that as part of the properties checks.
         return validation::result{std::move(an)};
-    } else if ( an.schema[an.spos].isobject() ) {
+    } else if ( an.sroot[an.spos].isobject() ) {
         auto properties = an.data[an.dpos];
         if ( not properties.isobject() ) return validation::result{std::move(an)};
         auto remaining{property_names(properties)};
@@ -153,7 +153,7 @@ const f5::json::assertion::checker f5::json::assertion::pattern_properties_check
         if ( not valid ) return valid;
         an.merge(std::move(valid));
 
-        if ( an.schema[an.spos].has_key("additionalProperties") ) {
+        if ( an.sroot[an.spos].has_key("additionalProperties") ) {
             auto valid = additional_properties(remaining, an);
             if ( not valid ) return valid;
             an.merge(std::move(valid));
@@ -183,12 +183,12 @@ const f5::json::assertion::checker f5::json::assertion::properties_checker = [](
                 if ( rit != remaining.end() ) remaining.erase(rit);
             }
         }
-        if ( an.schema[an.spos].has_key("patternProperties") ) {
+        if ( an.sroot[an.spos].has_key("patternProperties") ) {
             auto valid = pattern_properties(remaining, an);
             if ( not valid ) return valid;
             an.merge(std::move(valid));
         }
-        if ( an.schema[an.spos].has_key("additionalProperties") ) {
+        if ( an.sroot[an.spos].has_key("additionalProperties") ) {
             auto valid = additional_properties(remaining, an);
             if ( not valid ) return valid;
             an.merge(std::move(valid));

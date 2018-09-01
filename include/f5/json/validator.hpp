@@ -43,7 +43,7 @@ namespace f5 {
              */
             struct annotations {
                 const schema *base;
-                value schema;
+                value sroot;
                 pointer spos;
                 value data;
                 pointer dpos;

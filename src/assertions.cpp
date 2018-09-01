@@ -89,11 +89,11 @@ const f5::json::assertion::checker f5::json::assertion::if_checker = [](
     if ( pflag ) {
         an.merge(std::move(passed));
     }
-    if ( pflag && an.schema[an.spos].has_key("then") ) {
+    if ( pflag && an.sroot[an.spos].has_key("then") ) {
         auto valid = validation::first_error(an, an.spos / "then", an.dpos);
         if ( not valid ) return valid;
         an.merge(std::move(valid));
-    } else if ( not pflag && an.schema[an.spos].has_key("else") ) {
+    } else if ( not pflag && an.sroot[an.spos].has_key("else") ) {
         auto valid = validation::first_error(an, an.spos / "else", an.dpos);
         if ( not valid ) return valid;
         an.merge(std::move(valid));

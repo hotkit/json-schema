@@ -37,7 +37,7 @@ const f5::json::assertion::checker f5::json::assertion::items_checker = [](
                 if ( not valid ) return valid;
                 an.merge(std::move(valid));
             }
-            if ( an.schema[an.spos].has_key("additionalItems") ) {
+            if ( an.sroot[an.spos].has_key("additionalItems") ) {
                 for ( std::size_t index{std::min(psize, dsize)}; index < dsize; ++index ) {
                     auto valid = validation::first_error(an, an.spos / "additionalItems", an.dpos / index);
                     if ( not valid ) return valid;
