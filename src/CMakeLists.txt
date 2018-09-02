@@ -1,4 +1,5 @@
 add_library(f5-json-schema
+        annotations.cpp
         assertions.cpp
         assertions.array.cpp
         assertions.numeric.cpp
