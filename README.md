@@ -6,7 +6,7 @@ A JSON schema validator that builds on the JSON implementation found in [fost-ba
 
 ## Assertions
 
-The specifications for them are taken from [_JSON Schema Validation: A Vocabulary for Structural Validation of JSON_ (draft 1)](https://www.ietf.org/id/draft-handrews-json-schema-validation-01.txt). The following assertions are supported:
+The specifications for them are taken from [_JSON Schema Validation: A Vocabulary for Structural Validation of JSON_ (draft 1)](https://www.ietf.org/id/draft-handrews-json-schema-validation-01.txt). All of described assertions are implemented:
 
 * `allOf`, `anyOf` and `oneOf` -- Values must conform to a specific number of the provided schemas.
 * `const` -- Values must be equal to the one in the schema.
@@ -27,9 +27,14 @@ The specifications for them are taken from [_JSON Schema Validation: A Vocabular
 * `type` -- type check against the JSON types (`null`, `boolean`, `object`, `array`, `number`, `string` and `integer`).
 * `uniqueItems` -- All values in an array are unique.
 
-The schema used for testing is <http://json-schema.org/draft-07/schema#>. Progress can be seen by looking at the [to do list in the schema test cmake file](./test/stress/CMakeLists.txt).
+The schema used for testing is <http://json-schema.org/draft-07/schema#>.
+
+
+### Notes
 
 For type validation, if the underlying memory type is a `double` then it will only match against `number` even if there is no fractional part to the number. The JSON parser will correctly identify integers parsing JSON (and use the `int64_t` memory type for them), so this can only happen when JSON is produced by code that uses a `double`. The memory type `int64_t` will match both of the `number` and `integer` validation types.
+
+The handling of `$id` is particularly nasty. Although this implementation passes the test suite there are a large number of edge cases with the interactions between `$ref` and `$id` that are not tested or covered. Our recommendation is to avoid use of `$id` except for a full URL at schema root if required.
 
 
 ## The JSON Schema Testsuite
