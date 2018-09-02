@@ -9,6 +9,7 @@
 #pragma once
 
 #include <fost/json>
+#include <fost/url>
 
 
 namespace f5 {
@@ -67,6 +68,11 @@ namespace f5 {
 
                 /// Merge a result with this annotation
                 annotations &merge(result &&);
+
+                /// Return the base URL for this part of the schema based
+                /// on the local $id found in parent lexical scopes of the
+                /// JSON
+                fostlib::url spos_url() const;
             };
 
 

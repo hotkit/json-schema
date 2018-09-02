@@ -149,6 +149,19 @@ auto f5::json::validation::annotations::merge(result &&r) -> annotations & {
 }
 
 
+fostlib::url f5::json::validation::annotations::spos_url() const {
+    fostlib::url u{base->self(), pointer{spos.begin(), spos.end()}};
+    for ( auto pos = spos.begin(), end = spos.end(); pos != end; ++pos ) {
+        pointer from_base{spos.begin(), pos}, to_tip{pos, end};
+        if ( sroot[from_base].has_key("$id") ) {
+            u = fostlib::url{u, fostlib::coerce<u8view>(sroot[from_base]["$id"])};
+            u = fostlib::url{u, pointer{pos, end}};
+        }
+    }
+    return u;
+}
+
+
 /**
  * ## `f5::json::validation::result`
  */
@@ -198,7 +211,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
                 } else {
                     const auto &cache = *an.schemas;
                     if ( const auto frag = std::find(ref.begin(), ref.end(), '#'); frag == ref.end() ) {
-                        const fostlib::url u{an.base->self(), ref};
+                        const fostlib::url u{an.spos_url(), ref};
                         const auto &ref_schema = cache[u.as_string()];
                         auto valid = first_error(
                             annotations{an, ref_schema, pointer{}, an.data, an.dpos});
@@ -206,7 +219,8 @@ auto f5::json::validation::first_error(annotations an) -> result {
                         return annotations{std::move(an), std::move(valid)};
                     } else {
                         const f5::u8view us{ref.begin(), frag};
-                        const fostlib::url u{an.base->self(), us};
+                        const fostlib::url u{an.spos_url(), us};
+                        std::cout << "URL: " << u << std::endl;
                         const auto &ref_schema = cache[u.as_string()];
                         auto valid = first_error(
                             annotations{an, ref_schema,
