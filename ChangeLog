@@ -1,3 +1,6 @@
+2018-09-05  Kirit Saelensminde  <kirit@felspar.com>
+ Complete the implementation of fetching schemas over HTTP(S).
+
 2018-08-31  Kirit Saelensminde  <kirit@felspar.com>
  The implementation now fully conforms to the V7 test suite.
 

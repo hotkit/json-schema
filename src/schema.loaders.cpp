@@ -7,6 +7,7 @@
 
 #include <f5/json/schema.loaders.hpp>
 #include <f5/threading/map.hpp>
+#include <fost/atexit>
 #include <fost/http>
 #include <fost/insert>
 
@@ -22,6 +23,11 @@ const fostlib::setting<f5::json::value> f5::json::c_schema_loaders(__FILE__,
 
 namespace {
     f5::tsmap<f5::lstring, f5::json::schema_loader_fn> g_loaders;
+    const struct s {
+        s() {
+            fostlib::atexit([]() { g_loaders.clear(); });
+        }
+    } c_loaders_unloader;
 }
 
 
@@ -56,6 +62,13 @@ std::unique_ptr<f5::json::schema> f5::json::load_schema(u8view url) {
 namespace {
 
 
+    auto http(const fostlib::url &b, const fostlib::url &u) {
+        fostlib::http::user_agent ua(b);
+        auto response = ua.get(u);
+        auto j{fostlib::json::parse(response->body()->data())};
+        return std::make_unique<f5::json::schema>(u, j);
+    }
+
     const f5::json::schema_loader c_http{"http", [](f5::u8view url, f5::json::value config)
         -> std::unique_ptr<f5::json::schema>
     {
@@ -66,10 +79,7 @@ namespace {
                     fostlib::url base{fostlib::coerce<f5::u8view>(config["base"])};
                     fostlib::url fetch{base, url.substr(prefix.code_points())};
                     try {
-                        fostlib::http::user_agent ua(base);
-                        auto response = ua.get(fetch);
-                        auto j{fostlib::json::parse(response->body()->data())};
-                        return std::make_unique<f5::json::schema>(fetch, j);
+                        return http(base, fetch);
                     } catch ( fostlib::exceptions::exception &e ) {
                         fostlib::insert(e.data(), "schema", "url", url);
                         fostlib::insert(e.data(), "schema", "base", base);
@@ -77,8 +87,9 @@ namespace {
                         throw;
                     }
                 } else {
-                    throw fostlib::exceptions::not_implemented(
-                        __PRETTY_FUNCTION__, "Without base URL", url);
+                    fostlib::url base{fostlib::coerce<f5::u8view>(config["prefix"])};
+                    fostlib::url u{url};
+                    return http(base, u);
                 }
             }
         }
