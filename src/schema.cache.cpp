@@ -12,8 +12,12 @@
 #include <fost/push_back>
 
 
-const fostlib::setting<f5::json::value> f5::json::c_schema_path(__FILE__,
-    "JSON schema validation", "Schema load path", value::array_t{}, true);
+const fostlib::setting<f5::json::value> f5::json::c_schema_path(
+        __FILE__,
+        "JSON schema validation",
+        "Schema load path",
+        value::array_t{},
+        true);
 
 /**
  * ## Schema loading
@@ -54,26 +58,29 @@ namespace {
  */
 
 
-f5::json::schema_cache::schema_cache()
-: base(root_cache()) {
-}
+f5::json::schema_cache::schema_cache() : base(root_cache()) {}
 f5::json::schema_cache::schema_cache(std::shared_ptr<schema_cache> b)
-: base(b) {
-}
+: base(b) {}
 
 
 auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
     static std::shared_ptr<schema_cache> cache = []() {
         auto cache = std::make_shared<schema_cache>(nullptr);
-        if ( const auto p = fostlib::coerce<std::optional<f5::u8view>>(c_schema_path.value()); p )
-        {
-            const auto fn = fostlib::coerce<boost::filesystem::path>(fostlib::string(*p));
-            fostlib::json s{f5::json::value::parse(fostlib::utf::load_file(fn))};
-            cache->insert(schema{fostlib::url{fostlib::url{}, fn}, std::move(s)});
-        } else if ( c_schema_path.value().isarray() ) {
-            for ( const auto filepath : c_schema_path.value() ) {
-                throw fostlib::exceptions::not_implemented("f5::json::schema_cache::root_cache",
-                    "This type of schema load path not yet supported", c_schema_path.value());
+        if (const auto p = fostlib::coerce<std::optional<f5::u8view>>(
+                    c_schema_path.value());
+            p) {
+            const auto fn = fostlib::coerce<boost::filesystem::path>(
+                    fostlib::string(*p));
+            fostlib::json s{
+                    f5::json::value::parse(fostlib::utf::load_file(fn))};
+            cache->insert(
+                    schema{fostlib::url{fostlib::url{}, fn}, std::move(s)});
+        } else if (c_schema_path.value().isarray()) {
+            for (const auto filepath : c_schema_path.value()) {
+                throw fostlib::exceptions::not_implemented(
+                        "f5::json::schema_cache::root_cache",
+                        "This type of schema load path not yet supported",
+                        c_schema_path.value());
             }
         }
         return cache;
@@ -82,39 +89,42 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
 }
 
 
-auto f5::json::schema_cache::operator [] (f5::u8view u) const -> const schema & {
+auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
     try {
         const auto pos = cache.find(u);
-        if ( pos == cache.end() ) {
-            if ( base ) {
+        if (pos == cache.end()) {
+            if (base) {
                 return (*base)[u];
             } else {
                 std::unique_lock<std::mutex> lock{g_loader_cache_mutex()};
-                if ( auto pos = g_loader_cache().find(u); pos != g_loader_cache().end() ) {
+                if (auto pos = g_loader_cache().find(u);
+                    pos != g_loader_cache().end()) {
                     return *pos->second;
                 } else {
                     auto l = load_schema(u);
-                    if ( l ) {
-                        return *(g_loader_cache()[fostlib::string{u}] = std::move(l));
+                    if (l) {
+                        return *(
+                                g_loader_cache()[fostlib::string{u}] =
+                                        std::move(l));
                     } else {
                         throw fostlib::exceptions::not_implemented(
-                            __PRETTY_FUNCTION__, "Schema not found", u);
+                                __PRETTY_FUNCTION__, "Schema not found", u);
                     }
                 }
             }
         } else {
             return pos->second;
         }
-    } catch ( fostlib::exceptions::exception &e ) {
-        if ( not e.data().has_key("schema-cache") ) {
+    } catch (fostlib::exceptions::exception &e) {
+        if (not e.data().has_key("schema-cache")) {
             std::unique_lock<std::mutex> lock{g_loader_cache_mutex()};
-            for ( const auto &p : g_loader_cache() ) {
+            for (const auto &p : g_loader_cache()) {
                 fostlib::push_back(e.data(), "schema-cache", "", p.first);
             }
         }
         const fostlib::string cp{std::to_string((int64_t)this)};
         fostlib::insert(e.data(), "schema-cache", cp, value::array_t{});
-        for ( const auto &c : cache ) {
+        for (const auto &c : cache) {
             fostlib::push_back(e.data(), "schema-cache", cp, c.first);
         }
         throw;
@@ -123,19 +133,19 @@ auto f5::json::schema_cache::operator [] (f5::u8view u) const -> const schema & 
 
 
 auto f5::json::schema_cache::insert(schema s) -> const schema & {
-    if ( s.assertions().has_key("$id") ) {
+    if (s.assertions().has_key("$id")) {
         auto parts = fostlib::partition(
-            fostlib::coerce<fostlib::string>(s.assertions()["$id"]), "#");
+                fostlib::coerce<fostlib::string>(s.assertions()["$id"]), "#");
         cache.insert(std::make_pair(parts.first, s));
     }
-    auto pos = cache.insert(std::make_pair(
-        fostlib::coerce<fostlib::string>(s.self()), s));
+    auto pos = cache.insert(
+            std::make_pair(fostlib::coerce<fostlib::string>(s.self()), s));
     return pos.first->second;
 }
 
 
-auto f5::json::schema_cache::insert(fostlib::string n, schema s) -> const schema & {
+auto f5::json::schema_cache::insert(fostlib::string n, schema s)
+        -> const schema & {
     cache.insert(std::make_pair(n, s));
     return insert(s);
 }
-

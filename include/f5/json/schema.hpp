@@ -28,15 +28,11 @@ namespace f5 {
             fostlib::url id;
             value validation;
 
-        public:
+          public:
             schema(const fostlib::url &, value v);
 
-            const fostlib::url &self() const {
-                return id;
-            }
-            value assertions() const {
-                return validation;
-            }
+            const fostlib::url &self() const { return id; }
+            value assertions() const { return validation; }
 
             /// If the schema doesn't validate return the first position
             /// in the schema that fails.
@@ -51,4 +47,3 @@ namespace f5 {
 
 
 }
-

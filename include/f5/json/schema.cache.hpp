@@ -26,7 +26,7 @@ namespace f5 {
             std::shared_ptr<schema_cache> base;
             std::map<fostlib::string, schema> cache;
 
-        public:
+          public:
             /// Create an empty cache which uses the root cache
             /// as its base
             schema_cache();
@@ -34,7 +34,7 @@ namespace f5 {
             schema_cache(std::shared_ptr<schema_cache>);
 
             /// Perform a lookup in this case and its bases
-            const schema &operator [] (f5::u8view) const;
+            const schema &operator[](f5::u8view) const;
 
             /// The root cache. The root cache is the only cache which
             /// should have an empty base.
@@ -52,4 +52,3 @@ namespace f5 {
 
 
 }
-

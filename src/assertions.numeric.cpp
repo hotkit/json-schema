@@ -20,64 +20,68 @@ namespace {
 
     template<typename P>
     const auto bounds_checker(f5::lstring name, const P p) {
-        return [=](
-            f5::u8view rule, f5::json::value part,
-            f5::json::validation::annotations an
-        ) -> f5::json::validation::result {
-            if ( const auto bound{part.get<int64_t>()}; bound ) {
+        return [=](f5::u8view rule, f5::json::value part,
+                   f5::json::validation::annotations an)
+                       -> f5::json::validation::result {
+            if (const auto bound{part.get<int64_t>()}; bound) {
                 return an.data[an.dpos].apply_visitor(
-                    [&](int64_t v) mutable {
-                        return p(bound.value(), v) ? f5::json::validation::result{std::move(an)} : f5::json::validation::result{rule, an.spos, an.dpos};
-                    },
-                    [&](double v) mutable {
-                        return p(bound.value(), v) ? f5::json::validation::result{std::move(an)} : f5::json::validation::result{rule, an.spos, an.dpos};
-                    },
-                    [&](const auto &) mutable {
-                        return f5::json::validation::result{std::move(an)};
-                    });
-            } else if ( const auto bound{part.get<double>()}; bound ) {
+                        [&](int64_t v) mutable {
+                            return p(bound.value(), v)
+                                    ? f5::json::validation::result{std::move(an)}
+                                    : f5::json::validation::result{
+                                              rule, an.spos, an.dpos};
+                        },
+                        [&](double v) mutable {
+                            return p(bound.value(), v)
+                                    ? f5::json::validation::result{std::move(an)}
+                                    : f5::json::validation::result{
+                                              rule, an.spos, an.dpos};
+                        },
+                        [&](const auto &) mutable {
+                            return f5::json::validation::result{std::move(an)};
+                        });
+            } else if (const auto bound{part.get<double>()}; bound) {
                 return an.data[an.dpos].apply_visitor(
-                    [&](int64_t v) mutable {
-                        return p(bound.value(), v) ? f5::json::validation::result{std::move(an)} : f5::json::validation::result{rule, an.spos, an.dpos};
-                    },
-                    [&](double v) mutable {
-                        bool passed;
-                        if ( std::abs(bound.value() - v) < epsilon ) {
-                            passed = p(v, v);
-                        } else {
-                            passed = p(bound.value(), v);
-                        }
-                        return passed ? f5::json::validation::result{std::move(an)} : f5::json::validation::result{rule, an.spos, an.dpos};
-                    },
-                    [&](const auto &) mutable {
-                        return f5::json::validation::result{std::move(an)};
-                    });
+                        [&](int64_t v) mutable {
+                            return p(bound.value(), v)
+                                    ? f5::json::validation::result{std::move(an)}
+                                    : f5::json::validation::result{
+                                              rule, an.spos, an.dpos};
+                        },
+                        [&](double v) mutable {
+                            bool passed;
+                            if (std::abs(bound.value() - v) < epsilon) {
+                                passed = p(v, v);
+                            } else {
+                                passed = p(bound.value(), v);
+                            }
+                            return passed
+                                    ? f5::json::validation::result{std::move(an)}
+                                    : f5::json::validation::result{
+                                              rule, an.spos, an.dpos};
+                        },
+                        [&](const auto &) mutable {
+                            return f5::json::validation::result{std::move(an)};
+                        });
             } else {
-                throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__,
-                    name, part);
+                throw fostlib::exceptions::not_implemented(
+                        __PRETTY_FUNCTION__, name, part);
             }
             return f5::json::validation::result{std::move(an)};
         };
     };
 }
-const f5::json::assertion::checker f5::json::assertion::exclusive_maximum_checker =
-    bounds_checker("exclusiveMaximum", [](auto m, auto v) {
-        return v < m;
-    });
-const f5::json::assertion::checker f5::json::assertion::exclusive_minimum_checker =
-    bounds_checker("exclusiveMinimum", [](auto m, auto v) {
-        return v > m;
-    });
+const f5::json::assertion::checker
+        f5::json::assertion::exclusive_maximum_checker = bounds_checker(
+                "exclusiveMaximum", [](auto m, auto v) { return v < m; });
+const f5::json::assertion::checker
+        f5::json::assertion::exclusive_minimum_checker = bounds_checker(
+                "exclusiveMinimum", [](auto m, auto v) { return v > m; });
 const f5::json::assertion::checker f5::json::assertion::maximum_checker =
-    bounds_checker("maximum", [](auto m, auto v) {
-        return v <= m;
-    });
+        bounds_checker("maximum", [](auto m, auto v) { return v <= m; });
 const f5::json::assertion::checker f5::json::assertion::minimum_checker =
-    bounds_checker("minimum", [](auto m, auto v) {
-        return v >= m;
-    });
+        bounds_checker("minimum", [](auto m, auto v) { return v >= m; });
 const f5::json::assertion::checker f5::json::assertion::multiple_of_checker =
-    bounds_checker("multipleOf", [](auto m, auto v) {
-        return std::abs(std::remainder(v, m)) < epsilon;
-    });
-
+        bounds_checker("multipleOf", [](auto m, auto v) {
+            return std::abs(std::remainder(v, m)) < epsilon;
+        });
