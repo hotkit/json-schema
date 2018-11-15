@@ -12,8 +12,12 @@
 #include <fost/insert>
 
 
-const fostlib::setting<f5::json::value> f5::json::c_schema_loaders(__FILE__,
-    "JSON schema validation", "Schema loaders", value::array_t{}, true);
+const fostlib::setting<f5::json::value> f5::json::c_schema_loaders(
+        __FILE__,
+        "JSON schema validation",
+        "Schema loaders",
+        value::array_t{},
+        true);
 
 
 /**
@@ -38,14 +42,14 @@ f5::json::schema_loader::schema_loader(lstring n, schema_loader_fn f)
 
 
 std::unique_ptr<f5::json::schema> f5::json::load_schema(u8view url) {
-    for ( const auto loader : c_schema_loaders.value() ) {
+    for (const auto loader : c_schema_loaders.value()) {
         auto fn = g_loaders.find(fostlib::coerce<u8view>(loader["loader"]));
-        if ( fn ) {
+        if (fn) {
             auto s = fn(url, loader);
-            if ( s ) return s;
+            if (s) return s;
         } else {
-            throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__,
-                "Loader not found", loader);
+            throw fostlib::exceptions::not_implemented(
+                    __PRETTY_FUNCTION__, "Loader not found", loader);
         }
     }
     return {};
@@ -69,32 +73,39 @@ namespace {
         return std::make_unique<f5::json::schema>(u, j);
     }
 
-    const f5::json::schema_loader c_http{"http", [](f5::u8view url, f5::json::value config)
-        -> std::unique_ptr<f5::json::schema>
-    {
-        if ( config.has_key("prefix") ) {
-            const auto prefix = fostlib::coerce<f5::u8view>(config["prefix"]);
-            if ( url.starts_with(prefix) ) {
-                if ( config.has_key("base") ) {
-                    fostlib::url base{fostlib::coerce<f5::u8view>(config["base"])};
-                    fostlib::url fetch{base, url.substr(prefix.code_points())};
-                    try {
-                        return http(base, fetch);
-                    } catch ( fostlib::exceptions::exception &e ) {
-                        fostlib::insert(e.data(), "schema", "url", url);
-                        fostlib::insert(e.data(), "schema", "base", base);
-                        fostlib::insert(e.data(), "schema", "fetching", fetch);
-                        throw;
+    const f5::json::schema_loader c_http{
+            "http",
+            [](f5::u8view url,
+               f5::json::value config) -> std::unique_ptr<f5::json::schema> {
+                if (config.has_key("prefix")) {
+                    const auto prefix =
+                            fostlib::coerce<f5::u8view>(config["prefix"]);
+                    if (url.starts_with(prefix)) {
+                        if (config.has_key("base")) {
+                            fostlib::url base{fostlib::coerce<f5::u8view>(
+                                    config["base"])};
+                            fostlib::url fetch{
+                                    base, url.substr(prefix.code_points())};
+                            try {
+                                return http(base, fetch);
+                            } catch (fostlib::exceptions::exception &e) {
+                                fostlib::insert(e.data(), "schema", "url", url);
+                                fostlib::insert(
+                                        e.data(), "schema", "base", base);
+                                fostlib::insert(
+                                        e.data(), "schema", "fetching", fetch);
+                                throw;
+                            }
+                        } else {
+                            fostlib::url base{fostlib::coerce<f5::u8view>(
+                                    config["prefix"])};
+                            fostlib::url u{url};
+                            return http(base, u);
+                        }
                     }
-                } else {
-                    fostlib::url base{fostlib::coerce<f5::u8view>(config["prefix"])};
-                    fostlib::url u{url};
-                    return http(base, u);
                 }
-            }
-        }
-        return {};
-    }};
+                return {};
+            }};
 
 
 }

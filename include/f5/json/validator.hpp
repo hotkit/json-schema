@@ -51,15 +51,20 @@ namespace f5 {
 
                 std::shared_ptr<schema_cache> schemas;
 
-            private:
+              private:
                 friend class json::schema;
                 /// Construct the initial location
-                annotations(const json::schema &s, pointer sp, value d, pointer dp);
+                annotations(
+                        const json::schema &s, pointer sp, value d, pointer dp);
 
-            public:
+              public:
                 /// Construct a later annotation, but allow more replacements
-                annotations(annotations &a,
-                    const json::schema &s, pointer sp, value d, pointer dp);
+                annotations(
+                        annotations &a,
+                        const json::schema &s,
+                        pointer sp,
+                        value d,
+                        pointer dp);
                 /// Construct an annotations for another part of the validation
                 annotations(annotations &, pointer sp, pointer dp);
 
@@ -78,38 +83,36 @@ namespace f5 {
 
             /// The outcome of validation looking for a single error
             class result {
-            public:
-                /// In the case of a validation error then this describes where it
-                /// happened
+              public:
+                /// In the case of a validation error then this describes where
+                /// it happened
                 struct error {
                     f5::u8view assertion;
                     pointer spos, dpos;
                 };
 
-            private:
+              private:
                 friend annotations;
                 std::variant<error, annotations> outcome;
 
-            public:
+              public:
                 /// Describe a result that has an error
                 result(u8view assertion, pointer spos, pointer dpos)
-                : outcome{error{assertion, std::move(spos), std::move(dpos)}} {
-                }
+                : outcome{error{assertion, std::move(spos), std::move(dpos)}} {}
                 /// Return an annotation for merging into the base one
-                result(annotations an)
-                : outcome{std::move(an)} {
-                }
+                result(annotations an) : outcome{std::move(an)} {}
 
                 /// Return `true` if the result is that validation *passed*.
                 /// When a value of `false` is returned there will be an
                 /// error stored in the `outcome` field, otherwise the
                 /// annotations can be retrieved.
-                explicit operator bool () const;
+                explicit operator bool() const;
                 /// Return the error, or throw if there was no error
-                explicit operator error () &&;
+                explicit operator error() &&;
                 /// Release the local annotations so they can be merged
-                explicit operator annotations () && {
-                    throw fostlib::exceptions::not_implemented(__PRETTY_FUNCTION__);
+                explicit operator annotations() && {
+                    throw fostlib::exceptions::not_implemented(
+                            __PRETTY_FUNCTION__);
                 }
             };
 
@@ -117,8 +120,10 @@ namespace f5 {
             /// Perform the check
             result first_error(annotations);
             /// Recurse down into another level of the validation
-            inline result first_error(annotations &an, pointer spos, pointer dpos) {
-                return first_error(annotations{an, std::move(spos), std::move(dpos)});
+            inline result
+                    first_error(annotations &an, pointer spos, pointer dpos) {
+                return first_error(
+                        annotations{an, std::move(spos), std::move(dpos)});
             }
 
 
@@ -129,4 +134,3 @@ namespace f5 {
 
 
 }
-

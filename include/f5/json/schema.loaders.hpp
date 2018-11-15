@@ -26,7 +26,7 @@ namespace f5 {
         /// be used multiple times by a user each time with different
         /// configurations.
         using schema_loader_fn =
-            std::function<std::unique_ptr<schema>(u8view, value)>;
+                std::function<std::unique_ptr<schema>(u8view, value)>;
 
 
         struct schema_loader {
@@ -45,4 +45,3 @@ namespace f5 {
 
 
 }
-
