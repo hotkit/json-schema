@@ -1,5 +1,6 @@
 /**
-    Copyright 2018-2019, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd.
+   <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -47,7 +48,8 @@ const f5::json::assertion::checker f5::json::assertion::pattern_checker =
             auto string = fostlib::coerce<std::optional<f5::u8view>>(
                     an.data[an.dpos]);
             if (not string) return validation::result{std::move(an)};
-            std::regex re{static_cast<std::string>(fostlib::coerce<fostlib::string>(part))};
+            std::regex re{static_cast<std::string>(
+                    fostlib::coerce<fostlib::string>(part))};
             if (std::regex_search(
                         string->data(), string->data() + string->bytes(), re)) {
                 return validation::result{std::move(an)};
