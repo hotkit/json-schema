@@ -1,5 +1,5 @@
 /**
-    Copyright 2018, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd. <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -8,6 +8,7 @@
 #include <f5/json/schema.loaders.hpp>
 #include <f5/threading/map.hpp>
 #include <fost/atexit>
+#include <fost/log>
 #include <fost/http>
 #include <fost/insert>
 
@@ -18,6 +19,12 @@ const fostlib::setting<f5::json::value> f5::json::c_schema_loaders(
         "Schema loaders",
         value::array_t{},
         true);
+
+
+namespace {
+    const fostlib::module c_fost_json_schema{fostlib::c_fost, "json-schema"};
+    const fostlib::module c_fost_json_schema_loader{c_fost_json_schema, "loader"};
+}
 
 
 /**
@@ -77,15 +84,19 @@ namespace {
             "http",
             [](f5::u8view url,
                f5::json::value config) -> std::unique_ptr<f5::json::schema> {
+                auto logger{fostlib::log::debug(c_fost_json_schema_loader)};
+                logger("requested-url", url);
                 if (config.has_key("prefix")) {
                     const auto prefix =
                             fostlib::coerce<f5::u8view>(config["prefix"]);
+                    logger("prefix", prefix);
                     if (url.starts_with(prefix)) {
                         if (config.has_key("base")) {
                             fostlib::url base{fostlib::coerce<f5::u8view>(
                                     config["base"])};
                             fostlib::url fetch{
                                     base, url.substr(prefix.code_points())};
+                            logger("base", base)("fetching", fetch)("found", true);
                             try {
                                 return http(base, fetch);
                             } catch (fostlib::exceptions::exception &e) {
@@ -100,9 +111,17 @@ namespace {
                             fostlib::url base{fostlib::coerce<f5::u8view>(
                                     config["prefix"])};
                             fostlib::url u{url};
+                            logger("base", base)("fetching", u)("found", true);
                             return http(base, u);
                         }
+                    } else {
+                        logger("found", false);
+                        logger("reason", "URL doesn't start with supplied prefix");
                     }
+                } else {
+                    logger("found", false);
+                    logger("prefix", fostlib::json{});
+                    logger("reason", "No prefix given in configuration");
                 }
                 return {};
             }};
