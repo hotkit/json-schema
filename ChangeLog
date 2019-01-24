@@ -1,3 +1,6 @@
+2019-01-22  Kirit Saelensminde  <kirit@felspar.com>
+ Add debug logging for the HTTP schema loader.
+
 2018-09-05  Kirit Saelensminde  <kirit@felspar.com>
  Complete the implementation of fetching schemas over HTTP(S).
 
