@@ -1,5 +1,6 @@
 /**
-    Copyright 2018, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd.
+   <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -22,9 +23,10 @@ namespace {
         const auto patterns = an.sroot[an.spos]["patternProperties"];
         auto properties = an.data[an.dpos];
         for (const auto &pattern : patterns.object()) {
-            std::regex re{pattern.first.std_str()};
+            std::regex re{static_cast<std::string>(pattern.first)};
             for (const auto &property : properties.object()) {
-                if (std::regex_search(property.first.std_str(), re)) {
+                if (std::regex_search(
+                            static_cast<std::string>(property.first), re)) {
                     auto valid = f5::json::validation::first_error(
                             an, an.spos / "patternProperties" / pattern.first,
                             an.dpos / property.first);
