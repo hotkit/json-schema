@@ -16,15 +16,14 @@ namespace {
      * and we register all of the `$id`s that we find.
      *
      * The naive approach to this is going to be a bit slow, but good enough to
-     * start with because it will scan each schema we do find twice (once in that
-     * schema and once in its parent). Multiply nesting schemas increases this
-     * scan count.
+     * start with because it will scan each schema we do find twice (once in
+     * that schema and once in its parent). Multiply nesting schemas increases
+     * this scan count.
      */
-    void preload_ids(f5::json::value schema, f5::json::schema_cache&cache) {
-        if(schema.isobject()) {
-            for(auto const [key, value] : schema.object()) {
-                if(value.has_key("$id")) {
-                }
+    void preload_ids(f5::json::value schema, f5::json::schema_cache &cache) {
+        if (schema.isobject()) {
+            for (auto const [key, value] : schema.object()) {
+                if (value.has_key("$id")) {}
             }
         }
     }
@@ -42,7 +41,7 @@ f5::json::schema::schema(const fostlib::url &b, value v)
      }()},
   validation{v},
   schemas{std::make_shared<schema_cache>()} {
-      preload_ids(validation, *schemas);
+    preload_ids(validation, *schemas);
 }
 
 

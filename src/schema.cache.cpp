@@ -54,12 +54,12 @@ namespace {
             if (const auto p = fostlib::coerce<std::optional<f5::u8view>>(
                         f5::json::c_schema_path.value());
                 p) {
-                const auto fn = fostlib::coerce<fostlib::fs::path>(
-                        fostlib::string(*p));
+                const auto fn =
+                        fostlib::coerce<fostlib::fs::path>(fostlib::string(*p));
                 fostlib::json s{
                         f5::json::value::parse(fostlib::utf::load_file(fn))};
-                cache->insert(
-                        f5::json::schema{fostlib::url{fostlib::url{}, fn}, std::move(s)});
+                cache->insert(f5::json::schema{fostlib::url{fostlib::url{}, fn},
+                                               std::move(s)});
             } else if (f5::json::c_schema_path.value().isarray()) {
                 for (const auto filepath : f5::json::c_schema_path.value()) {
                     throw fostlib::exceptions::not_implemented(
