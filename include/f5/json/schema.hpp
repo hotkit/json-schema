@@ -18,6 +18,9 @@ namespace f5 {
     namespace json {
 
 
+        class schema_cache;
+
+
         /**
             ## JSON Schema
 
@@ -30,6 +33,9 @@ namespace f5 {
 
           public:
             schema(const fostlib::url &, value v);
+
+            /// We need to pre-load this with $id schemas that we find
+            std::shared_ptr<schema_cache> schemas;
 
             const fostlib::url &self() const { return id; }
             value assertions() const { return validation; }

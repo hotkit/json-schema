@@ -56,7 +56,7 @@ f5::json::validation::annotations::annotations(
   spos(std::move(sp)),
   data(std::move(d)),
   dpos(std::move(dp)),
-  schemas{std::make_shared<schema_cache>()} {
+  schemas{s.schemas} {
     id_handling(this, schemas);
     definitions(this, base->self(), pointer{});
 }
