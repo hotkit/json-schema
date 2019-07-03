@@ -92,8 +92,13 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
      * This "special value" for the root cache is pretty bad, but we can't put
      * a cache in a schema and load schemas during the root cache creation
      * because we end up in an infinite loop.
+     *
+     * The returned pointer cannot be `nullptr` or we will go into an infinite
+     * loop chasing down the pre-load list before we bottom out and try to
+     * load in more schemas using the schema loading mechanism.
      */
-    static std::shared_ptr<schema_cache> cache{};
+    static auto cache{
+            std::make_shared<schema_cache>(std::shared_ptr<schema_cache>{})};
     return cache;
 }
 
