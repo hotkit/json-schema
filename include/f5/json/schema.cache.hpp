@@ -24,7 +24,7 @@ namespace f5 {
             friend validation::annotations;
 
             std::shared_ptr<schema_cache> base;
-            std::map<fostlib::string, schema> cache;
+            std::map<fostlib::url, schema> cache;
 
           public:
             /// Create an empty cache which uses the root cache

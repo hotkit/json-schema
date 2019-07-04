@@ -105,7 +105,7 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
 
 auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
     try {
-        const auto pos = cache.find(u);
+        const auto pos = cache.find(fostlib::url{u});
         if (pos == cache.end()) {
             if (base == root_cache()) {
                 return (*g_pre_load())[u];
@@ -141,7 +141,9 @@ auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
         const fostlib::string cp{std::to_string((int64_t)this)};
         fostlib::insert(e.data(), "schema-cache", cp, value::array_t{});
         for (const auto &c : cache) {
-            fostlib::push_back(e.data(), "schema-cache", cp, c.first);
+            fostlib::push_back(
+                    e.data(), "schema-cache", cp,
+                    fostlib::coerce<fostlib::string>(c.first));
         }
         throw;
     }
