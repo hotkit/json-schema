@@ -20,10 +20,20 @@ namespace {
      * that schema and once in its parent). Multiply nesting schemas increases
      * this scan count.
      */
-    void preload_ids(f5::json::value schema, f5::json::schema_cache &cache) {
+    void preload_ids(
+            fostlib::url const &base,
+            f5::json::value schema,
+            f5::json::schema_cache &cache) {
         if (schema.isobject()) {
             for (auto const [key, value] : schema.object()) {
-                if (value.has_key("$id")) {}
+                if (value.has_key("$id") && value["$id"].isatom()) {
+                    auto &s = cache.insert(f5::json::schema{
+                            fostlib::url{
+                                    base,
+                                    fostlib::coerce<f5::u8view>(value["$id"])},
+                            value});
+                }
+                preload_ids(base, value, cache);
             }
         }
     }
@@ -41,7 +51,7 @@ f5::json::schema::schema(const fostlib::url &b, value v)
      }()},
   validation{v},
   schemas{std::make_shared<schema_cache>()} {
-    preload_ids(validation, *schemas);
+    preload_ids(id, validation, *schemas);
 }
 
 
