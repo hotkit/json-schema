@@ -1,3 +1,6 @@
+2019-07-03  Kirit Saelensminde  <kirit@felspar.com>
+ Add an initial pass when a schema is first loaded to look for embedded `$id`s so they can be used from anywhere else in the schema.
+
 2019-01-22  Kirit Saelensminde  <kirit@felspar.com>
  Add debug logging for the HTTP schema loader.
 
