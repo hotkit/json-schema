@@ -18,14 +18,17 @@ namespace {
     const fostlib::setting<bool> c_verbose(
             __FILE__, "json-schema-testsuite", "Verbose", false, true);
 
-    const fostlib::setting<fostlib::string>
-            c_base(__FILE__,
-                   "json-schema-testsuite",
-                   "Base URL",
-                   "https://raw.githubusercontent.com/"
-                   "json-schema-org/JSON-Schema-Test-Suite/"
-                   "master/tests/draft7/",
-                   true);
+    const fostlib::setting<fostlib::string> c_base(
+            __FILE__,
+            "json-schema-testsuite",
+            "Base URL",
+            "https://raw.githubusercontent.com/json-schema-org/"
+            "JSON-Schema-Test-Suite/e64ebf90a001f4e0e18984d2086ea15765cfead2/"
+            "tests/draft7/",
+            //"https://raw.githubusercontent.com/"
+            //"json-schema-org/JSON-Schema-Test-Suite/"
+            //"master/tests/draft7/",
+            true);
 
     const fostlib::setting<fostlib::json> c_loaders{
             __FILE__, f5::json::c_schema_loaders, []() {
