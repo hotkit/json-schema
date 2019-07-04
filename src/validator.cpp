@@ -92,36 +92,40 @@ auto f5::json::validation::first_error(annotations an) -> result {
             return result{"false", std::move(an.spos), std::move(an.dpos)};
         } else if (auto part = an.sroot[an.spos]; part.isobject()) {
             if (part.has_key("$ref")) {
-                const auto ref = fostlib::coerce<f5::u8view>(part["$ref"]);
-                if (ref.bytes() && *ref.begin() == '#') {
+                auto const ref = fostlib::coerce<f5::u8view>(part["$ref"]);
+                if (ref.starts_with("#/") || ref == "#") {
                     auto valid = first_error(
                             an,
-                            fostlib::jcursor::parse_json_pointer_fragment(
-                                    fostlib::coerce<f5::u8view>(part["$ref"])),
+                            fostlib::jcursor::parse_json_pointer_fragment(ref),
                             an.dpos);
                     if (not valid)
                         return valid;
                     else
                         return annotations(std::move(an), std::move(valid));
                 } else {
+                    fostlib::string url{ref};
+                    if (ref.starts_with("#")) {
+                        url = fostlib::coerce<fostlib::string>(
+                                fostlib::url{an.spos_url(), ref});
+                    }
                     const auto &cache = *an.schemas;
                     if (const auto frag =
-                                std::find(ref.begin(), ref.end(), '#');
-                        frag == ref.end()) {
-                        const fostlib::url u{an.spos_url(), ref};
+                                std::find(url.begin(), url.end(), '#');
+                        frag == url.end()) {
+                        const fostlib::url u{an.spos_url(), url};
                         const auto &ref_schema = cache[u.as_string()];
                         auto valid = first_error(annotations{
                                 an, ref_schema, pointer{}, an.data, an.dpos});
                         if (not valid) return valid;
                         return annotations{std::move(an), std::move(valid)};
                     } else {
-                        const f5::u8view us{ref.begin(), frag};
+                        const f5::u8view us{url.begin(), frag};
                         const fostlib::url u{an.spos_url(), us};
                         const auto &ref_schema = cache[u.as_string()];
                         auto valid = first_error(annotations{
                                 an, ref_schema,
                                 fostlib::jcursor::parse_json_pointer_fragment(
-                                        f5::u8view{frag, ref.end()}),
+                                        f5::u8view{frag, url.end()}),
                                 an.data, an.dpos});
                         if (not valid) return valid;
                         return annotations(std::move(an), std::move(valid));
