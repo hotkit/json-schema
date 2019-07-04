@@ -29,13 +29,13 @@ namespace {
                             return p(bound.value(), v)
                                     ? f5::json::validation::result{std::move(an)}
                                     : f5::json::validation::result{
-                                              rule, an.spos, an.dpos};
+                                            rule, an.spos, an.dpos};
                         },
                         [&](double v) mutable {
                             return p(bound.value(), v)
                                     ? f5::json::validation::result{std::move(an)}
                                     : f5::json::validation::result{
-                                              rule, an.spos, an.dpos};
+                                            rule, an.spos, an.dpos};
                         },
                         [&](const auto &) mutable {
                             return f5::json::validation::result{std::move(an)};
@@ -46,7 +46,7 @@ namespace {
                             return p(bound.value(), v)
                                     ? f5::json::validation::result{std::move(an)}
                                     : f5::json::validation::result{
-                                              rule, an.spos, an.dpos};
+                                            rule, an.spos, an.dpos};
                         },
                         [&](double v) mutable {
                             bool passed;
@@ -58,7 +58,7 @@ namespace {
                             return passed
                                     ? f5::json::validation::result{std::move(an)}
                                     : f5::json::validation::result{
-                                              rule, an.spos, an.dpos};
+                                            rule, an.spos, an.dpos};
                         },
                         [&](const auto &) mutable {
                             return f5::json::validation::result{std::move(an)};

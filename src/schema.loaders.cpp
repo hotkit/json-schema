@@ -1,5 +1,6 @@
 /**
-    Copyright 2018-2019, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd.
+   <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -23,7 +24,8 @@ const fostlib::setting<f5::json::value> f5::json::c_schema_loaders(
 
 namespace {
     const fostlib::module c_fost_json_schema{fostlib::c_fost, "json-schema"};
-    const fostlib::module c_fost_json_schema_loader{c_fost_json_schema, "loader"};
+    const fostlib::module c_fost_json_schema_loader{c_fost_json_schema,
+                                                    "loader"};
 }
 
 
@@ -96,7 +98,8 @@ namespace {
                                     config["base"])};
                             fostlib::url fetch{
                                     base, url.substr(prefix.code_points())};
-                            logger("base", base)("fetching", fetch)("found", true);
+                            logger("base",
+                                   base)("fetching", fetch)("found", true);
                             try {
                                 return http(base, fetch);
                             } catch (fostlib::exceptions::exception &e) {
@@ -116,7 +119,8 @@ namespace {
                         }
                     } else {
                         logger("found", false);
-                        logger("reason", "URL doesn't start with supplied prefix");
+                        logger("reason",
+                               "URL doesn't start with supplied prefix");
                     }
                 } else {
                     logger("found", false);
