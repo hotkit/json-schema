@@ -152,13 +152,7 @@ auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
 
 
 auto f5::json::schema_cache::insert(schema s) -> const schema & {
-    if (s.assertions().has_key("$id")) {
-        auto parts = fostlib::partition(
-                fostlib::coerce<fostlib::string>(s.assertions()["$id"]), "#");
-        cache.insert(std::make_pair(parts.first, s));
-    }
-    auto pos = cache.insert(
-            std::make_pair(fostlib::coerce<fostlib::string>(s.self()), s));
+    auto pos = cache.insert(std::make_pair(s.self(), s));
     return pos.first->second;
 }
 
