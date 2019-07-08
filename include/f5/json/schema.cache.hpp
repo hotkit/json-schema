@@ -1,5 +1,6 @@
 /**
-    Copyright 2018, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd.
+   <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -41,7 +42,7 @@ namespace f5 {
             static std::shared_ptr<schema_cache> root_cache();
 
             /// Add a schema at a given position in the cache
-            const schema &insert(fostlib::string, schema);
+            const schema &insert(fostlib::url, schema);
             /// Add a schema at an unnamed position, i.e. only if it
             /// contains a `$id` describing its proper location
             const schema &insert(schema);

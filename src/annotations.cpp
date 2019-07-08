@@ -39,8 +39,7 @@ namespace {
                  anp->sroot[anp->spos][sub]["definitions"].object()) {
                 fostlib::url r{anp->base->self(), anp->spos / sub};
                 const auto &subschema = anp->schemas->insert(
-                        fostlib::string(r.as_string()),
-                        f5::json::schema{base, def.second});
+                        r, f5::json::schema{base, def.second});
                 definitions(
                         anp, subschema.self(), sub / "definitions" / def.first);
             }

@@ -1,5 +1,6 @@
 /**
-    Copyright 2018, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd.
+   <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -162,7 +163,7 @@ auto f5::json::schema_cache::insert(schema s) -> const schema & {
 }
 
 
-auto f5::json::schema_cache::insert(fostlib::string n, schema s)
+auto f5::json::schema_cache::insert(fostlib::url n, schema s)
         -> const schema & {
     cache.insert(std::make_pair(n, s));
     return insert(s);
