@@ -51,6 +51,7 @@ f5::json::schema_loader::schema_loader(lstring n, schema_loader_fn f)
 
 
 std::unique_ptr<f5::json::schema> f5::json::load_schema(u8view url) {
+    url = f5::u8view{url.begin(), std::find(url.begin(), url.end(), '#')};
     for (const auto loader : c_schema_loaders.value()) {
         auto fn = g_loaders.find(fostlib::coerce<u8view>(loader["loader"]));
         if (fn) {
