@@ -35,7 +35,7 @@ namespace f5 {
             schema_cache(std::shared_ptr<schema_cache>);
 
             /// Perform a lookup in this case and its bases
-            const schema &operator[](f5::u8view) const;
+            const schema &operator[](fostlib::url) const;
 
             /// The root cache. The root cache is the only cache which
             /// should have an empty base.
