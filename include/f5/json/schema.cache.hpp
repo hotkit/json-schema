@@ -36,6 +36,8 @@ namespace f5 {
 
             /// Perform a lookup in this case and its bases
             const schema &operator[](fostlib::url) const;
+            [[deprecated("Only call with a fostlib::url")]]
+            const schema &operator[](f5::u8view) const;
 
             /// The root cache. The root cache is the only cache which
             /// should have an empty base.

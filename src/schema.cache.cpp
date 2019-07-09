@@ -104,7 +104,11 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
 }
 
 
-auto f5::json::schema_cache::operator[](fostlib::url u) const -> const schema & {
+auto f5::json::schema_cache::operator[](f5::u8view u) const -> schema const & {
+    return (*this)[fostlib::url{u}];
+}
+
+
     try {
         if(not u.fragment()) u.fragment(fostlib::string{});
         const auto pos = cache.find(u);
