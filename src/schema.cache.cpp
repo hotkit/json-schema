@@ -109,8 +109,10 @@ auto f5::json::schema_cache::operator[](f5::u8view u) const -> schema const & {
 }
 
 
+auto f5::json::schema_cache::operator[](fostlib::url u) const
+        -> schema const & {
     try {
-        if(not u.fragment()) u.fragment(fostlib::string{});
+        if (not u.fragment()) u.fragment(fostlib::string{});
         const auto pos = cache.find(u);
         if (pos == cache.end()) {
             if (base == root_cache()) {
@@ -125,9 +127,7 @@ auto f5::json::schema_cache::operator[](f5::u8view u) const -> schema const & {
                 } else {
                     auto l = load_schema(u.as_string());
                     if (l) {
-                        return *(
-                                g_loader_cache()[std::move(u)] =
-                                        std::move(l));
+                        return *(g_loader_cache()[u] = std::move(l));
                     } else {
                         throw fostlib::exceptions::not_implemented(
                                 __PRETTY_FUNCTION__, "Schema not found", u);
@@ -141,7 +141,8 @@ auto f5::json::schema_cache::operator[](f5::u8view u) const -> schema const & {
         if (not e.data().has_key("schema-cache")) {
             std::unique_lock<std::mutex> lock{g_loader_cache_mutex()};
             for (const auto &p : g_loader_cache()) {
-                fostlib::push_back(e.data(), "schema-cache", "", p.first.as_string());
+                fostlib::push_back(
+                        e.data(), "schema-cache", "", p.first.as_string());
             }
         }
         const fostlib::string cp{std::to_string((int64_t)this)};
@@ -164,7 +165,7 @@ auto f5::json::schema_cache::insert(schema s) -> const schema & {
 
 auto f5::json::schema_cache::insert(fostlib::url n, schema s)
         -> const schema & {
-    if(not n.fragment()) n.fragment(fostlib::string{});
+    if (not n.fragment()) n.fragment(fostlib::string{});
     cache.insert(std::make_pair(std::move(n), s));
     return insert(s);
 }

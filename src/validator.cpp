@@ -112,14 +112,16 @@ auto f5::json::validation::first_error(annotations an) -> result {
                     if (const auto frag =
                                 std::find(url.begin(), url.end(), '#');
                         frag == url.end()) {
-                        const auto &ref_schema = cache[fostlib::url{an.spos_url(), url}];
+                        const auto &ref_schema =
+                                cache[fostlib::url{an.spos_url(), url}];
                         auto valid = first_error(annotations{
                                 an, ref_schema, pointer{}, an.data, an.dpos});
                         if (not valid) return valid;
                         return annotations{std::move(an), std::move(valid)};
                     } else {
                         const f5::u8view us{url.begin(), frag};
-                        const auto &ref_schema = cache[fostlib::url{an.spos_url(), us}];
+                        const auto &ref_schema =
+                                cache[fostlib::url{an.spos_url(), us}];
                         auto valid = first_error(annotations{
                                 an, ref_schema,
                                 fostlib::jcursor::parse_json_pointer_fragment(

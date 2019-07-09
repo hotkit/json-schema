@@ -52,7 +52,7 @@ f5::json::schema::schema(const fostlib::url &b, value v)
      }()},
   validation{v},
   schemas{std::make_shared<schema_cache>()} {
-    if(not id.fragment()) id.fragment(fostlib::string{});
+    if (not id.fragment()) id.fragment(fostlib::string{});
     preload_ids(id, validation, *schemas);
 }
 
