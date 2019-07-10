@@ -47,7 +47,7 @@ f5::json::schema::schema(const fostlib::url &b, value v)
          if (v.has_key("$id")) {
              return fostlib::coerce<fostlib::string>(v["$id"]);
          } else {
-             return fostlib::guid();
+             return fostlib::string{};
          }
      }()},
   validation{v},
