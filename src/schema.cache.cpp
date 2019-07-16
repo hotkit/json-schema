@@ -104,38 +104,63 @@ auto f5::json::schema_cache::root_cache() -> std::shared_ptr<schema_cache> {
 }
 
 
-auto f5::json::schema_cache::operator[](f5::u8view u) const -> schema const & {
-    return (*this)[fostlib::url{u}];
+auto f5::json::schema_cache::recursive_lookup(fostlib::url const &u) const
+        -> schema const * {
+    const auto pos = cache.find(u);
+    if (pos == cache.end()) {
+        if (base == root_cache()) {
+            return (*g_pre_load()).recursive_lookup(u);
+        } else if (base) {
+            return (*base).recursive_lookup(u);
+        } else {
+            std::unique_lock<std::mutex> lock{g_loader_cache_mutex()};
+            if (auto pos = g_loader_cache().find(u);
+                pos != g_loader_cache().end()) {
+                return pos->second.get();
+            } else {
+                auto l = load_schema(u.as_string());
+                if (l) {
+                    return (g_loader_cache()[u] = std::move(l)).get();
+                } else {
+                    return nullptr;
+                }
+            }
+        }
+    } else {
+        return &pos->second;
+    }
+}
+
+
+auto f5::json::schema_cache::operator[](f5::u8view u) const -> const schema & {
+    return (*this)[fostlib::url{u}].first;
 }
 
 
 auto f5::json::schema_cache::operator[](fostlib::url u) const
-        -> schema const & {
+        -> std::pair<schema const &, fostlib::jcursor> {
     try {
         if (not u.fragment()) u.fragment(fostlib::string{});
-        const auto pos = cache.find(u);
-        if (pos == cache.end()) {
-            if (base == root_cache()) {
-                return (*g_pre_load())[std::move(u)];
-            } else if (base) {
-                return (*base)[std::move(u)];
-            } else {
-                std::unique_lock<std::mutex> lock{g_loader_cache_mutex()};
-                if (auto pos = g_loader_cache().find(u);
-                    pos != g_loader_cache().end()) {
-                    return *pos->second;
-                } else {
-                    auto l = load_schema(u.as_string());
-                    if (l) {
-                        return *(g_loader_cache()[u] = std::move(l));
-                    } else {
-                        throw fostlib::exceptions::not_implemented(
-                                __PRETTY_FUNCTION__, "Schema not found", u);
-                    }
-                }
-            }
+        auto const *s = recursive_lookup(u);
+        if (s != nullptr) {
+            return {*s, fostlib::jcursor{}};
         } else {
-            return pos->second;
+            if (f5::u8view{u.fragment().value()}.starts_with("/")) {
+                auto sptr = u.fragment().value();
+                u.fragment(fostlib::string{});
+                s = recursive_lookup(u);
+                if (s == nullptr) {
+                    throw fostlib::exceptions::not_implemented(
+                            __PRETTY_FUNCTION__, "Schema not found", u);
+                } else {
+                    sptr = fostlib::ascii_printable_string{"#" + sptr};
+                    return {*s,
+                            fostlib::jcursor::parse_json_pointer_fragment(sptr)};
+                }
+            } else {
+                throw fostlib::exceptions::not_implemented(
+                        __PRETTY_FUNCTION__, "Schema not found", u);
+            }
         }
     } catch (fostlib::exceptions::exception &e) {
         if (not e.data().has_key("schema-cache")) {

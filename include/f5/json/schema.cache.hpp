@@ -35,8 +35,9 @@ namespace f5 {
             schema_cache(std::shared_ptr<schema_cache>);
 
             /// Perform a lookup in this case and its bases
-            const schema &operator[](fostlib::url) const;
-            [[deprecated("Only call with a fostlib::url")]] const schema &
+            std::pair<schema const &, fostlib::jcursor>
+                    operator[](fostlib::url) const;
+            [[deprecated("Only call with a fostlib::url")]] schema const &
                     operator[](f5::u8view) const;
 
             /// The root cache. The root cache is the only cache which
@@ -48,6 +49,10 @@ namespace f5 {
             /// Add a schema at an unnamed position, i.e. only if it
             /// contains a `$id` describing its proper location
             const schema &insert(schema);
+
+          private:
+            /// Looks for an exact match
+            schema const *recursive_lookup(fostlib::url const &) const;
         };
 
 
