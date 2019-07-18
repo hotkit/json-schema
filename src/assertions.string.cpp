@@ -48,8 +48,8 @@ const f5::json::assertion::checker f5::json::assertion::pattern_checker =
             auto string = fostlib::coerce<std::optional<f5::u8view>>(
                     an.data[an.dpos]);
             if (not string) return validation::result{std::move(an)};
-            std::regex re{static_cast<std::string>(
-                    fostlib::coerce<fostlib::string>(part))};
+            auto const rgx = fostlib::coerce<f5::u8view>(part);
+            std::regex re{rgx.data(), rgx.memory().size()};
             if (std::regex_search(
                         string->data(), string->data() + string->bytes(), re)) {
                 return validation::result{std::move(an)};
