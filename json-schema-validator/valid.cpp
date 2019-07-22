@@ -1,5 +1,6 @@
 /**
-    Copyright 2018, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd.
+   <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -9,6 +10,7 @@
 
 #include <fost/file>
 #include <fost/main>
+#include <fost/timer>
 #include <fost/unicode>
 
 
@@ -41,8 +43,7 @@ namespace {
         std::cout << "Assertion: " << e.assertion
                   << "\nSchema position: " << e.spos
                   << "\nData position: " << e.dpos
-                  << "\nSchema: " << s.assertions()[e.spos]
-                  << "\nData: " << d[e.dpos] << std::endl;
+                  << "\nData at that position: " << d[e.dpos] << std::endl;
     }
 }
 
@@ -53,23 +54,42 @@ FSL_MAIN("json-schema-validator", "JSON Schema Validator")
     args.commandSwitch("v", c_verbose);
     args.commandSwitch("-schema", c_schema);
 
-    const f5::json::schema s{fostlib::url{}, load_json(c_schema.value())};
+    fostlib::timer time;
+
+    if (c_verbose.value()) {
+        std::cout << 0.0 << " Loading schema JSON " << c_schema.value()
+                  << std::endl;
+    }
+    f5::json::value parsed = load_json(c_schema.value());
+    if (c_verbose.value()) {
+        std::cout << time.seconds() << " Establishing as schema" << std::endl;
+    }
+    f5::json::schema const s{fostlib::url{}, parsed};
 
     for (const auto &arg : args) {
         if (c_verbose.value()) {
-            std::cout << "Loading and validating " << arg << std::endl;
+            std::cout << time.seconds() << "Loading " << arg << std::endl;
         }
         const auto j = load_json(arg);
+        if (c_verbose.value()) {
+            std::cout << time.seconds() << " Validating " << std::endl;
+        }
+        auto v = s.validate(j);
+        if (c_verbose.value()) std::cout << time.seconds() << " Results in\n";
         if (c_check_invalid.value()) {
-            if (const auto v = s.validate(j); v) {
+            if (v) {
                 std::cout << arg << " validated when it should not have"
                           << std::endl;
                 return 2;
             }
         } else {
-            if (auto v = s.validate(j); not v) {
+            if (not v) {
+                if (c_verbose.value())
+                    std::cout << time.seconds() << " Results in\n";
                 std::cout << arg << " did not validate" << std::endl;
-                print(s, j, (f5::json::validation::result::error)std::move(v));
+                print(s, j,
+                      static_cast<f5::json::validation::result::error>(
+                              std::move(v)));
                 return 1;
             }
         }
