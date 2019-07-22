@@ -11,6 +11,9 @@
 #include <fost/unicode>
 
 
+#include <iostream>
+
+
 namespace {
     /**
      * We walk down through all of the keys (excepting some particular values)
@@ -28,11 +31,12 @@ namespace {
         if (schema.isobject()) {
             for (auto const [key, value] : schema.object()) {
                 if (value.has_key("$id") && value["$id"].isatom()) {
+                    fostlib::url const subschema{base,
+                                    fostlib::coerce<f5::u8view>(value["$id"])};
+                    std::cout << "Found sub-schema " << subschema << " in "
+                        << base << '\n';
                     auto &s = cache.insert(f5::json::schema{
-                            fostlib::url{
-                                    base,
-                                    fostlib::coerce<f5::u8view>(value["$id"])},
-                            value});
+                            subschema, value});
                 }
                 preload_ids(base, value, cache);
             }

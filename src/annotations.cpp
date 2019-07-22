@@ -1,5 +1,5 @@
 /**
-    Copyright 2018, Proteus Technologies Co Ltd. <https://support.felspar.com/>
+    Copyright 2018-2019, Proteus Technologies Co Ltd. <https://support.felspar.com/>
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -22,9 +22,9 @@ namespace {
             std::shared_ptr<f5::json::schema_cache> schemas) {
         if (anp->sroot[anp->spos].has_key("$id")) {
             if (not schemas) {
-                schemas =
-                        std::make_shared<f5::json::schema_cache>(anp->schemas);
-                anp->schemas = schemas;
+//                 schemas =
+//                         std::make_shared<f5::json::schema_cache>(anp->schemas);
+//                 anp->schemas = schemas;
             }
             anp->base = &schemas->insert(
                     f5::json::schema{anp->base->self(), anp->sroot[anp->spos]});
@@ -38,10 +38,10 @@ namespace {
             for (const auto &def :
                  anp->sroot[anp->spos][sub]["definitions"].object()) {
                 fostlib::url r{anp->base->self(), anp->spos / sub};
-                const auto &subschema = anp->schemas->insert(
-                        r, f5::json::schema{base, def.second});
-                definitions(
-                        anp, subschema.self(), sub / "definitions" / def.first);
+//                 const auto &subschema = anp->schemas->insert(
+//                         r, f5::json::schema{base, def.second});
+//                 definitions(
+//                         anp, subschema.self(), sub / "definitions" / def.first);
             }
         }
     }
@@ -54,10 +54,7 @@ f5::json::validation::annotations::annotations(
   sroot(s.assertions()),
   spos(std::move(sp)),
   data(std::move(d)),
-  dpos(std::move(dp)),
-  schemas{s.schemas} {
-    id_handling(this, schemas);
-    definitions(this, base->self(), pointer{});
+  dpos(std::move(dp)) {
 }
 
 
@@ -67,10 +64,7 @@ f5::json::validation::annotations::annotations(
   sroot(s.assertions()),
   spos(std::move(sp)),
   data(std::move(d)),
-  dpos(std::move(dp)),
-  schemas{std::make_shared<schema_cache>(an.schemas)} {
-    id_handling(this, schemas);
-    definitions(this, base->self(), pointer{});
+  dpos(std::move(dp)) {
 }
 
 
@@ -80,9 +74,7 @@ f5::json::validation::annotations::annotations(
   sroot(an.sroot),
   spos(std::move(sp)),
   data(an.data),
-  dpos(std::move(dp)),
-  schemas(an.schemas) {
-    id_handling(this, nullptr);
+  dpos(std::move(dp)) {
 }
 
 
@@ -91,9 +83,7 @@ f5::json::validation::annotations::annotations(annotations &&b, result &&w)
   sroot{std::move(b.sroot)},
   spos{std::move(b.spos)},
   data{std::move(b.data)},
-  dpos{std::move(b.dpos)},
-  schemas{b.schemas} {
-    id_handling(this, nullptr);
+  dpos{std::move(b.dpos)} {
     merge(std::move(w));
 }
 
@@ -125,4 +115,9 @@ fostlib::url f5::json::validation::annotations::spos_url() const {
         }
     }
     return u;
+}
+
+
+auto f5::json::validation::annotations::schemas() const -> schema_cache const & {
+    return *base->schemas;
 }

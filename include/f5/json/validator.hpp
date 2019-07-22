@@ -49,8 +49,6 @@ namespace f5 {
                 value data;
                 pointer dpos;
 
-                std::shared_ptr<schema_cache> schemas;
-
               private:
                 friend class json::schema;
                 /// Construct the initial location
@@ -78,6 +76,9 @@ namespace f5 {
                 /// on the local $id found in parent lexical scopes of the
                 /// JSON
                 fostlib::url spos_url() const;
+
+                /// Return the schema cache for the current schema
+                schema_cache const &schemas() const;
             };
 
 

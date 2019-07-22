@@ -99,6 +99,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
                 /// Easily switch between the two implementations here for now
                 bool const old_implementation{true};
                 if constexpr (old_implementation) {
+
                     auto const ref = fostlib::coerce<f5::u8view>(part["$ref"]);
                     if (ref.starts_with("#/") || ref == "#") {
                         auto valid = first_error(
@@ -116,7 +117,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
                             url = fostlib::coerce<fostlib::string>(
                                     fostlib::url{an.spos_url(), ref});
                         }
-                        const auto &cache = *an.schemas;
+                        const auto &cache = an.schemas();
                         if (const auto frag =
                                     std::find(url.begin(), url.end(), '#');
                             frag == url.end()) {
@@ -156,7 +157,7 @@ auto f5::json::validation::first_error(annotations an) -> result {
                             an.spos_url(),
                             fostlib::coerce<f5::u8view>(part["$ref"])};
                     std::cout << "Gives URL of " << ref << std::endl;
-                    const auto &cache = *an.schemas;
+                    const auto &cache = an.schemas();
                     auto const &[ref_schema, location] = cache[ref];
                     std::cout << ref_schema.self() << " at " << location
                               << std::endl;
