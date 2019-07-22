@@ -1,5 +1,5 @@
 /**
-    Copyright 2018-2019 Red Anchor Trading Co. Ltd.
+    Copyright 2018-2020 Red Anchor Trading Co. Ltd.
 
     Distributed under the Boost Software License, Version 1.0.
     See <http://www.boost.org/LICENSE_1_0.txt>
@@ -15,20 +15,21 @@
 
 
 namespace {
-    const fostlib::setting<bool> c_verbose(
-            __FILE__, "json-schema-testsuite", "Verbose", false, true);
 
-    const fostlib::setting<fostlib::string> c_base(
-            __FILE__,
-            "json-schema-testsuite",
-            "Base URL",
+
+    constexpr f5::u8view base_url =
             "https://raw.githubusercontent.com/json-schema-org/"
             "JSON-Schema-Test-Suite/e64ebf90a001f4e0e18984d2086ea15765cfead2/"
-            "tests/draft7/",
-            //"https://raw.githubusercontent.com/"
-            //"json-schema-org/JSON-Schema-Test-Suite/"
-            //"master/tests/draft7/",
-            true);
+            "tests/draft7/";
+
+    const fostlib::setting<bool> c_verbose{
+            __FILE__, "json-schema-testsuite", "Verbose", false, true};
+    const fostlib::setting<std::optional<fostlib::string>> c_output{
+            __FILE__, "json-schema-testsuite", "Output file", fostlib::null,
+            true};
+
+    const fostlib::setting<fostlib::string> c_base{
+            __FILE__, "json-schema-testsuite", "Base URL", base_url, true};
 
     const fostlib::setting<fostlib::json> c_loaders{
             __FILE__, f5::json::c_schema_loaders, []() {
@@ -53,6 +54,7 @@ namespace {
 FSL_MAIN("json-schema-testsuite", "JSON Schema Test Suite Runner")
 (fostlib::ostream &out, fostlib::arguments &args) {
     args.commandSwitch("v", c_verbose);
+    args.commandSwitch("o", c_output);
     args.commandSwitch("p", f5::json::c_schema_path);
 
     fostlib::stringstream buffer;
@@ -91,7 +93,13 @@ FSL_MAIN("json-schema-testsuite", "JSON Schema Test Suite Runner")
             }
         }
 
-        if (failed && not c_verbose.value()) out << buffer.str();
+        if (failed && not c_verbose.value()) {
+            out << buffer.str();
+        } else if (not failed && c_output.value()) {
+            fostlib::utf::save_file(
+                    fostlib::coerce<fostlib::fs::path>(c_output.value().value()),
+                    "");
+        }
 
         return std::min(failed, 255);
     } catch (...) {
