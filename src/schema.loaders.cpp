@@ -8,7 +8,6 @@
 
 #include <f5/json/schema.loaders.hpp>
 #include <f5/threading/map.hpp>
-#include <fost/atexit>
 #include <fost/log>
 #include <fost/http>
 #include <fost/insert>
@@ -36,11 +35,6 @@ namespace {
 
 namespace {
     f5::tsmap<f5::lstring, f5::json::schema_loader_fn> g_loaders;
-    const struct s {
-        s() {
-            fostlib::atexit([]() { g_loaders.clear(); });
-        }
-    } c_loaders_unloader;
 }
 
 
