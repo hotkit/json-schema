@@ -21,3 +21,4 @@ endif()
 install(TARGETS f5-json-schema
     LIBRARY DESTINATION lib
     ARCHIVE DESTINATION lib)
+install(DIRECTORY ../include/f5 DESTINATION include)
