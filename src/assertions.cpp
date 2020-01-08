@@ -163,8 +163,10 @@ const f5::json::assertion::checker f5::json::assertion::type_checker = [](f5::u8
         bool operator()(int64_t) {
             return type == "integer" || type == "number";
         }
-        bool operator()(fostlib::json::string_p) { return type == "string"; }
-        bool operator()(f5::lstring) { return type == "string"; }
+        bool operator()(std::shared_ptr<fostlib::string>) {
+            return type == "string";
+        }
+        bool operator()(f5::u8view) { return type == "string"; }
         bool operator()(fostlib::json::array_p) { return type == "array"; }
         bool operator()(fostlib::json::object_p) { return type == "object"; }
     };
