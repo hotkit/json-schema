@@ -23,8 +23,8 @@ const fostlib::setting<f5::json::value> f5::json::c_schema_loaders(
 
 namespace {
     const fostlib::module c_fost_json_schema{fostlib::c_fost, "json-schema"};
-    const fostlib::module c_fost_json_schema_loader{c_fost_json_schema,
-                                                    "loader"};
+    const fostlib::module c_fost_json_schema_loader{
+            c_fost_json_schema, "loader"};
 }
 
 

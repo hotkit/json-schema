@@ -120,8 +120,8 @@ fostlib::url f5::json::validation::annotations::spos_url() const {
     for (auto pos = spos.begin(), end = spos.end(); pos != end; ++pos) {
         pointer from_base{spos.begin(), pos}, to_tip{pos, end};
         if (sroot[from_base].has_key("$id")) {
-            u = fostlib::url{u,
-                             fostlib::coerce<u8view>(sroot[from_base]["$id"])};
+            u = fostlib::url{
+                    u, fostlib::coerce<u8view>(sroot[from_base]["$id"])};
             u = fostlib::url{u, pointer{pos, end}};
         }
     }

@@ -60,8 +60,8 @@ const f5::json::assertion::checker f5::json::assertion::const_checker =
             if (an.data[an.dpos] == part) {
                 return validation::result{std::move(an)};
             } else {
-                return validation::result{rule, an.spos / rule,
-                                          std::move(an.dpos)};
+                return validation::result{
+                        rule, an.spos / rule, std::move(an.dpos)};
             }
         };
 
@@ -173,8 +173,8 @@ const f5::json::assertion::checker f5::json::assertion::type_checker = [](f5::u8
     const auto str = fostlib::coerce<fostlib::nullable<f5::u8view>>(part);
     if (str) {
         if (not an.data[an.dpos].apply_visitor(typecheck{str.value()})) {
-            return validation::result{rule, std::move(an.spos),
-                                      std::move(an.dpos)};
+            return validation::result{
+                    rule, std::move(an.spos), std::move(an.dpos)};
         }
     } else if (part.isarray()) {
         for (const auto t : part) {

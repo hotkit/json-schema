@@ -71,8 +71,8 @@ const f5::json::assertion::checker f5::json::assertion::max_items_checker =
             if (array.isarray()) {
                 const auto count = fostlib::coerce<int64_t>(part);
                 if (array.size() > count) {
-                    return validation::result{rule, an.spos / rule,
-                                              std::move(an.dpos)};
+                    return validation::result{
+                            rule, an.spos / rule, std::move(an.dpos)};
                 }
             }
             return validation::result{std::move(an)};
@@ -87,8 +87,8 @@ const f5::json::assertion::checker f5::json::assertion::min_items_checker =
             if (array.isarray()) {
                 const auto count = fostlib::coerce<int64_t>(part);
                 if (array.size() < count) {
-                    return validation::result{rule, an.spos / rule,
-                                              std::move(an.dpos)};
+                    return validation::result{
+                            rule, an.spos / rule, std::move(an.dpos)};
                 }
             }
             return validation::result{std::move(an)};
@@ -105,8 +105,8 @@ const f5::json::assertion::checker f5::json::assertion::unique_items_checker =
                     std::set<f5::json::value> found;
                     for (const auto item : array) {
                         if (found.find(item) != found.end()) {
-                            return validation::result{rule, an.spos / rule,
-                                                      an.dpos};
+                            return validation::result{
+                                    rule, an.spos / rule, an.dpos};
                         }
                         found.insert(item);
                     }
